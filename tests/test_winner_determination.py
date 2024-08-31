@@ -1,6 +1,6 @@
 import unittest
 
-from GameLogic.logic import Logic
+from logic.logic import Logic
 
 
 class TestLogic(unittest.TestCase):

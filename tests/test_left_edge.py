@@ -1,12 +1,14 @@
 import unittest
 
+import logic
 from GameLogic.logic import Logic
 
 
 class TestLogic(unittest.TestCase):
 
     def setUp(self):
-        self.logic = Logic()
+        self.logic = Logic(logic.create_board(1,1))
+
 
     def test_process_left_edge(self):
         self.logic.board = [

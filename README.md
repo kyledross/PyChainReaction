@@ -17,5 +17,6 @@ my first leap into machine-learning.)
 
 ### Credits
 
-All credits for the game logic and design go to Mark Tuttle, Tim Midkiff, and Compute! magazine. This effort is only an attempt
-to port the code to Python so that it can continue to be enjoyed in new ways.
+All credit for the design of this game goes to Mark Tuttle, Tim Midkiff, and Compute!
+magazine.
+This effort is only an attempt to port the code to Python so that it can continue to be enjoyed in new ways.

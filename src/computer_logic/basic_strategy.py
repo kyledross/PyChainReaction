@@ -4,7 +4,7 @@ import copy
 from game_logic.logic import Logic
 
 
-def find_best_play(board: list[list[dict[str, int]]], player_id: int) -> list[dict[str, int]]:
+def find_best_moves(board: list[list[dict[str, int]]], player_id: int) -> list[dict[str, int]]:
     """
     This routine will iteratively attempt to place a piece on each cell of a board, and then
     process the board for each move to see how effective the move was.  It scores each attempted move,
@@ -16,19 +16,17 @@ def find_best_play(board: list[list[dict[str, int]]], player_id: int) -> list[di
     board_width = len(board[0])
     board_height = len(board)
 
-    
     scored_moves = []
 
     for y in range(board_height):
         for x in range(board_width):
             logic_instance = Logic(copy.deepcopy(board))
-            if logic_instance.place_piece(y, x, player_id):
+            if logic_instance.place_piece(x, y, player_id):
                 logic_instance.process_board()
                 score: int = score_game_board(logic_instance.board, player_id)
                 scored_moves.append({"x": x, "y": y, "score": score})
             else:
-                scored_moves.append({"x": x, "y": y, "score": 0}) # this move isn't allowed
-
+                scored_moves.append({"x": x, "y": y, "score": 0})  # this move isn't allowed
 
     # Find the highest score
     highest_score = max(move["score"] for move in scored_moves)
@@ -39,15 +37,15 @@ def find_best_play(board: list[list[dict[str, int]]], player_id: int) -> list[di
     return best_moves
 
 
-def choose_one_best_move(best_moves: list[dict[str, int]]) -> tuple[int, int]:
+def choose_one_best_move(best_moves: list[dict[str, int]]) -> dict[str, int]:
     """
-    Returns a single best move x,y from a list of 1 or more best moves.
+    Returns a single best move x, y from a list of 1 or more best moves.
     If there are more than one best move, one will be chosen at random.
     :param best_moves: A list of dictionaries containing possible best moves with their coordinates.
-    :return: A tuple containing the x and y coordinates of the chosen best move.
+    :return: A dictionary containing the x and y coordinates of the chosen best move.
     """
     best_move = random.choice(best_moves)
-    return best_move["x"], best_move["y"]
+    return {"x": best_move["x"], "y": best_move["y"]}
 
 
 def score_game_board(board: list[list[dict[str, int]]], player_id: int) -> int:

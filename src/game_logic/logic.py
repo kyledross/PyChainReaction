@@ -14,6 +14,14 @@ class Logic:
         self.board = board
         self.send_debug_to_console: bool = False
 
+    def piece_placement_is_allowed(self, row: int, col: int, player_id: int) -> bool:
+        board_position = self.board[row][col]
+        if board_position['player_id'] == 0:
+            return True
+        if board_position['player_id'] == player_id:
+            return True
+        return False
+
     def place_piece(self, row: int, col: int, player_id: int) -> bool:
         """
         Places a piece belonging to the specified player on the board.
@@ -23,9 +31,9 @@ class Logic:
         :param player_id: the id of the player whose pieces are being placed
         :return: True if the placement is successful, False otherwise
         """
-        board_position = self.board[row][col]
-        if board_position['player_id'] != 0 and board_position['player_id'] != player_id:
+        if not self.piece_placement_is_allowed(row, col, player_id):
             return False
+        board_position = self.board[row][col]
         board_position['player_id'] = player_id
         board_position['num_pieces'] += 1
         return True
@@ -135,12 +143,17 @@ class Logic:
         """
         Prints the board in a formatted grid to the console.
         """
-        for row in self.board:
-            formatted_row = []
+        print("x")
+        for row_index, row in enumerate(self.board):
+            formatted_row = [f"{row_index} "]  # Add row number
             for cell in row:
                 formatted_row.append(f"P{cell['player_id']}:{cell['num_pieces']}")
             print(" | ".join(formatted_row))
-        print("\n")
+
+        # Print column headers
+        col_headers = "y  | " + " | ".join(f"{col_index}   " for col_index in range(len(self.board[0])))
+        print(col_headers)
+        print()
 
     def winner_determined(self) -> bool:
         """

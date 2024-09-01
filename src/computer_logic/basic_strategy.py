@@ -18,8 +18,8 @@ def find_best_moves(board: list[list[dict[str, int]]], player_id: int) -> list[d
 
     scored_moves = []
 
-    for y in range(board_height):
-        for x in range(board_width):
+    for x in range(board_height):
+        for y in range(board_width):
             logic_instance = Logic(copy.deepcopy(board))
             if logic_instance.place_piece(x, y, player_id):
                 logic_instance.process_board()

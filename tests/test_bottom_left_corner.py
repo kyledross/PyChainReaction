@@ -1,13 +1,12 @@
 import unittest
 
 from game_logic import logic
-from game_logic.logic import Logic
 
 
 class TestLogic(unittest.TestCase):
 
     def setUp(self):
-        self.logic = Logic(logic.create_board(1, 1))
+        self.logic = logic.Logic(logic.create_board(1, 1))
 
 
     def test_process_bottom_left_corner(self):

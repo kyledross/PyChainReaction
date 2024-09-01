@@ -1,20 +1,44 @@
-"""
-This is the basic-strategy computer player logic.
-This logic will choose a playing position based off of the following criteria, in order.
+import game_logic.logic
 
-1. Select a cell that is adjacent to an opponent's cell that will result in a capture of opponent's pieces in a chain reaction.
-2. Select a cell that is adjacent to an opponent's cell that will result in a capture of opponent's piece in a single reaction.
-3. Select a cell that is adjacent to an opponent's cell that is not full that won't result in a chain reaction, but is increasing the
-number of the computer's pieces.
-4. Select a cell that is not adjacent to any opponent's cell but is increasing the number of the computer's pieces.
-5. Select an empty cell.
 
-In the event that there are more than one possibility that ranks the highest, choose one at random.
+def find_best_play(board: list[list[dict[str, int]]], player_id: int):
+    """
+    This routine will iteratively attempt to place a piece on each cell of a board, and then
+    process the board for each move to see how effective the move was.  It scores each attempted move,
+    and then returns the best x,y move based on the highest score.
+    :param board: the game board
+    :param player_id: the id of the player making the move
+    :return: x,y of the best move
+    """
+    board_width = len(board[0])
+    board_height = len(board)
 
-Future enhancements:
-If there are more than one ranking choice, run a simulation to see what the number of computer cells will be, and choose
-the one that yields the best results.
+    
+    scored_moves = [{"x": 0, "y": 0, "score": 0}]
 
-Use machine learning to play the game.
-"""
+    for y in range(board_height):
+        for x in range(board_width):
+            logic = game_logic.logic.Logic(board.copy())
+            if logic.place_piece(y, x, player_id):
+                # placement was successful
+                # process the board
+                board_changed = logic.process_board()
+                if not board_changed:
+                    scored_moves.append({"x": x, "y": y, "score": 1}) # this move only added a piece
+                else:
+                    # this move caused a reaction
+                    # score the result
+                    score: int = 1 # todo: write scoring routine
+                    scored_moves.append({"x": x, "y": y, "score": score})
+            else:
+                scored_moves.append({"x": x, "y": y, "score": 0}) # this move isn't allowed
 
+    #todo: find moves with the highest score
+    # if there is more than one with the same rank, randomly choose one
+
+    #todo: return the best x,y move
+
+def score_game_board(board: list[list[dict[str, int]]], player_id: int) -> int:
+    #todo: count the number of cells that belong to the player
+
+    return 0

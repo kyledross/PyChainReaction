@@ -6,10 +6,21 @@ class Logic:
     def __init__(self, board: list[list[dict[str, int]]]):
         self.board = board
 
-    def place_piece(self, row: int, col: int, player_id: int):
+    def place_piece(self, row: int, col: int, player_id: int) -> bool:
+        """
+        Places a piece belonging to the specified player on the board.
+        If the cell already belongs to another player, the placement fails and False is returned.
+        :param row: the row to place the piece
+        :param col: the column to place the piece
+        :param player_id: the id of the player whose pieces are being placed
+        :return: True if the placement is successful, False otherwise
+        """
         board_position = self.board[row][col]
+        if board_position['player_id'] != 0 and board_position['player_id'] != player_id:
+            return False
         board_position['player_id'] = player_id
         board_position['num_pieces'] += 1
+        return True
 
     def get_position_to_the_left(self, row: int, col: int):
         target_col = col - 1
@@ -46,7 +57,7 @@ class Logic:
         to, and side positions have three).
         This process continues iteratively until no more cells exceed their limits or all positions on the board contain
         one player's pieces.
-        :return: 
+        :return: True if the board changed, False otherwise
         """
 
         # Iterate through the index of rows in the board

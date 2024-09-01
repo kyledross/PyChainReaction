@@ -30,9 +30,12 @@ class TestLogic(unittest.TestCase):
     def test_place_piece_on_occupied_by_another_player_position(self):
         player_id = 1
         self.logic.place_piece(0, 0, player_id)
-        self.logic.place_piece(0, 0, 2)
-        self.assertEqual(self.logic.board[0][0]['player_id'], 2)
+        self.assertFalse(self.logic.place_piece(0, 0, 2))
+        self.assertEqual(self.logic.board[0][0]['player_id'], 1)
 
+    def test_place_piece_on_empty_position(self):
+        self.assertTrue(
+            self.logic.place_piece(0, 0, 1))
 
 if __name__ == '__main__':
     unittest.main()

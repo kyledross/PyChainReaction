@@ -1,4 +1,6 @@
 import game_logic.logic
+import random
+import copy
 
 
 def find_best_play(board: list[list[dict[str, int]]], player_id: int):
@@ -14,31 +16,39 @@ def find_best_play(board: list[list[dict[str, int]]], player_id: int):
     board_height = len(board)
 
     
-    scored_moves = [{"x": 0, "y": 0, "score": 0}]
+    scored_moves = []
 
     for y in range(board_height):
         for x in range(board_width):
-            logic = game_logic.logic.Logic(board.copy())
+            logic = game_logic.logic.Logic(copy.deepcopy(board))
             if logic.place_piece(y, x, player_id):
                 # placement was successful
                 # process the board
                 board_changed = logic.process_board()
-                if not board_changed:
-                    scored_moves.append({"x": x, "y": y, "score": 1}) # this move only added a piece
-                else:
-                    # this move caused a reaction
-                    # score the result
-                    score: int = 1 # todo: write scoring routine
-                    scored_moves.append({"x": x, "y": y, "score": score})
+                # this move caused a reaction
+                # score the result
+                score: int = score_game_board(logic.board, player_id)
+                scored_moves.append({"x": x, "y": y, "score": score})
             else:
                 scored_moves.append({"x": x, "y": y, "score": 0}) # this move isn't allowed
 
-    #todo: find moves with the highest score
-    # if there is more than one with the same rank, randomly choose one
 
-    #todo: return the best x,y move
+    # Find the highest score
+    highest_score = max(move["score"] for move in scored_moves)
+
+    # Collect all moves with the highest score
+    best_moves = [move for move in scored_moves if move["score"] == highest_score]
+
+    # Randomly select one of the best moves if there are ties
+    best_move = random.choice(best_moves)
+
+    # Return the coordinates of the best move
+    return best_move["x"], best_move["y"]
 
 def score_game_board(board: list[list[dict[str, int]]], player_id: int) -> int:
-    #todo: count the number of cells that belong to the player
-
-    return 0
+    count = 0
+    for row in board:
+        for cell in row:
+            if cell.get("player_id") == player_id:
+                count += 1
+    return count

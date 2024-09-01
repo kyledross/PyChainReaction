@@ -1,5 +1,5 @@
-import logic
-from logic import Logic
+from game_logic import logic
+from game_logic.logic import Logic
 
 
 def main():

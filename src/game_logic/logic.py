@@ -5,6 +5,7 @@ def create_board(width: int, height: int) -> list[list[dict[str, int]]]:
 class Logic:
     def __init__(self, board: list[list[dict[str, int]]]):
         self.board = board
+        self.send_debug_to_console: bool = False
 
     def place_piece(self, row: int, col: int, player_id: int) -> bool:
         """
@@ -57,7 +58,7 @@ class Logic:
         to, and side positions have three).
         This process continues iteratively until no more cells exceed their limits or all positions on the board contain
         one player's pieces.
-        :return: True if the board changed, False otherwise
+        :return: True if a win has been detected, False otherwise
         """
 
         # Iterate through the index of rows in the board
@@ -71,8 +72,9 @@ class Logic:
             board_changed = False
             for row_index in range(len(self.board)):
                 for col_index in range(len(self.board[row_index])):
-                    print("Before:")
-                    self.print_board()
+                    if self.send_debug_to_console:
+                        print("Before:")
+                        self.print_board()
                     if row_index == row_top and col_index == col_left:
                         board_changed = self.process_top_left_corner(col_index, row_index)
                     elif row_index == row_top and col_index == col_right:
@@ -91,8 +93,9 @@ class Logic:
                         board_changed = self.process_right_edge(col_index, row_index)
                     else:
                         board_changed = self.process_inner_position(col_index, row_index)
-                    print("After:")
-                    self.print_board()
+                    if self.send_debug_to_console:
+                        print("After:")
+                        self.print_board()
                     if self.winner_determined():
                         return True
         return False
@@ -126,7 +129,7 @@ class Logic:
                     if cell['player_id'] == 2:
                         player_2_count += 1
         winner = occupied_count > 1 and (occupied_count == player_1_count or occupied_count == player_2_count)
-        if winner:
+        if winner and self.send_debug_to_console:
             print("Winner determined.")
         return winner
 

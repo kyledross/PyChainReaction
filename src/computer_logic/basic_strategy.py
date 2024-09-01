@@ -1,7 +1,7 @@
 import random
 import copy
 
-from logic import Logic
+from game_logic.logic import Logic
 
 
 def find_best_play(board: list[list[dict[str, int]]], player_id: int):
@@ -23,11 +23,7 @@ def find_best_play(board: list[list[dict[str, int]]], player_id: int):
         for x in range(board_width):
             logic_instance = Logic(copy.deepcopy(board))
             if logic_instance.place_piece(y, x, player_id):
-                # placement was successful
-                # process the board
-                board_changed = logic_instance.process_board()
-                # this move caused a reaction
-                # score the result
+                logic_instance.process_board()
                 score: int = score_game_board(logic_instance.board, player_id)
                 scored_moves.append({"x": x, "y": y, "score": score})
             else:
@@ -40,11 +36,15 @@ def find_best_play(board: list[list[dict[str, int]]], player_id: int):
     # Collect all moves with the highest score
     best_moves = [move for move in scored_moves if move["score"] == highest_score]
 
+    return best_moves
+
+
+def choose_one_best_move(best_moves):
     # Randomly select one of the best moves if there are ties
     best_move = random.choice(best_moves)
-
     # Return the coordinates of the best move
     return best_move["x"], best_move["y"]
+
 
 def score_game_board(board: list[list[dict[str, int]]], player_id: int) -> int:
     count = 0

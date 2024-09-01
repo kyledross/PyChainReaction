@@ -17,8 +17,9 @@ class TestGamePlay(unittest.TestCase):
         self.assertEqual(game.winner_determined(), False)
 
         game.place_piece(0, 0, 1)
-        game.process_board()
+        winner_detected: bool = game.process_board()
         self.assertEqual(game.winner_determined(), True)
+        self.assertEqual(winner_detected, True)
 
     def test_full_board_flip(self):
         self.board = [[{'player_id': 0, 'num_pieces': 0} for _ in range(3)] for _ in range(3)]
@@ -60,14 +61,14 @@ class TestGamePlay(unittest.TestCase):
         # player 3 has 1 corner piece
         game.place_piece(2, 2, 2)
 
-        result = game.process_board()
-        self.assertEqual(result, False)
+        win_detected = game.process_board()
+        self.assertEqual(win_detected, False)
 
         # player 1 places piece into top left corner,
         # causing a cascade that takes over the board and wins
         game.place_piece(0, 0, 1)
-        result = game.process_board()
-        self.assertEqual(result, True)
+        win_detected = game.process_board()
+        self.assertEqual(win_detected, True)
 
 
 if __name__ == '__main__':

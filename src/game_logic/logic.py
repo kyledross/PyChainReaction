@@ -1,8 +1,15 @@
-
 def create_board(width: int, height: int) -> list[list[dict[str, int]]]:
     return [[{'player_id': 0, 'num_pieces': 0} for _ in range(width)] for _ in range(height)]
 
+
 class Logic:
+    """
+    Logic class handles the state and operations on a game board consisting of pieces placed by players.
+
+    :param board: A 2D list representing the game board.
+    Each cell is a dictionary containing 'player_id' and 'num_pieces'.
+    """
+
     def __init__(self, board: list[list[dict[str, int]]]):
         self.board = board
         self.send_debug_to_console: bool = False
@@ -23,25 +30,49 @@ class Logic:
         board_position['num_pieces'] += 1
         return True
 
-    def get_position_to_the_left(self, row: int, col: int):
+    def get_position_to_the_left(self, row: int, col: int) -> dict:
+        """
+        :param row: The row index of the current position.
+        :param col: The column index of the current position.
+        :return: The value of the position to the immediate left of the given position.
+        :raises ValueError: If there is no position to the left.
+        """
         target_col = col - 1
         if target_col < 0:
             raise ValueError("Target column is less than zero")
         return self.board[row][target_col]
 
-    def get_position_to_the_right(self, row: int, col: int):
+    def get_position_to_the_right(self, row: int, col: int) -> dict:
+        """
+        :param row: The row index of the current position.
+        :param col: The column index of the current position.
+        :return: The value at the position to the right of the current position as a dictionary.
+        :raises ValueError: If there is no position to the right.
+        """
         target_col = col + 1
         if target_col >= len(self.board[0]):
             raise ValueError("Target column is greater than or equal to the length of the board")
         return self.board[row][target_col]
 
-    def get_position_above(self, row: int, col: int):
+    def get_position_above(self, row: int, col: int) -> dict:
+        """
+        :param row: The current row index of the position
+        :param col: The current column index of the position
+        :return: The element at the position directly above the given row and column in the board
+        :raises ValueError: If there is no position above the given position.
+        """
         target_row = row - 1
         if target_row < 0:
             raise ValueError("Target row is less than zero")
         return self.board[target_row][col]
 
-    def get_position_below(self, row: int, col: int):
+    def get_position_below(self, row: int, col: int) -> dict:
+        """
+        :param row: The row index of the current position.
+        :param col: The column index of the current position.
+        :return: The element in the position directly below the specified (row, col) on the board if it exists.
+        :raises ValueError: If there is no position below the given position.
+        """
         target_row = row + 1
         if target_row >= len(self.board):
             raise ValueError("Target row is greater than or equal to the length of the board")
@@ -100,7 +131,7 @@ class Logic:
                         return True
         return False
 
-    def print_board(self):
+    def print_board(self) -> None:
         """
         Prints the board in a formatted grid to the console.
         """
@@ -133,7 +164,13 @@ class Logic:
             print("Winner determined.")
         return winner
 
-    def process_inner_position(self, col_index, row_index):
+    def process_inner_position(self, col_index: int, row_index: int) -> bool:
+        """
+        Processes a cell that is not a corner or edge.
+        :param col_index: The column index of the position to be processed.
+        :param row_index: The row index of the position to be processed.
+        :return: A boolean value indicating whether the processing resulted in a chain reaction.
+        """
         if self.board[row_index][col_index]['num_pieces'] < 4:
             return False
         # change ownership
@@ -154,7 +191,13 @@ class Logic:
             self.board[row_index][col_index]['player_id'] = 0
         return True
 
-    def process_right_edge(self, col_index, row_index):
+    def process_right_edge(self, col_index: int, row_index: int) -> bool:
+        """
+        Processes a cell that is a right edge, but not a corner.
+        :param col_index: The column index of the position on the board to be processed.
+        :param row_index: The row index of the position on the board to be processed.
+        :return: A boolean value indicating whether the processing resulted in a chain reaction.
+        """
         if self.board[row_index][col_index]['num_pieces'] < 3:
             return False
         # change ownership
@@ -172,7 +215,13 @@ class Logic:
             self.board[row_index][col_index]['player_id'] = 0
         return True
 
-    def process_left_edge(self, col_index, row_index):
+    def process_left_edge(self, col_index: int, row_index: int) -> bool:
+        """
+        Processes a cell that is a left edge, but not a corner.
+        :param col_index: The column index of the cell being processed.
+        :param row_index: The row index of the cell being processed.
+        :return: A boolean value indicating whether the processing resulted in a chain reaction.
+        """
         if self.board[row_index][col_index]['num_pieces'] < 3:
             return False
         # change ownership
@@ -191,7 +240,13 @@ class Logic:
             self.board[row_index][col_index]['player_id'] = 0
         return True
 
-    def process_bottom_edge(self, col_index, row_index):
+    def process_bottom_edge(self, col_index: int, row_index: int) -> bool:
+        """
+        Processes a cell that is a bottom edge, but not a corner.
+        :param col_index: The column index of the cell being processed on the board.
+        :param row_index: The row index of the cell being processed on the board.
+        :return: A boolean value indicating whether the processing resulted in a chain reaction.
+        """
         if self.board[row_index][col_index]['num_pieces'] < 3:
             return False
         # change ownership
@@ -210,7 +265,13 @@ class Logic:
             self.board[row_index][col_index]['player_id'] = 0
         return True
 
-    def process_top_edge(self, col_index, row_index):
+    def process_top_edge(self, col_index: int, row_index: int) -> bool:
+        """
+        Processes a cell that is a top edge, but not a corner.
+        :param col_index: Column index of the cell being processed
+        :param row_index: Row index of the cell being processed
+        :return: A boolean value indicating whether the processing resulted in a chain reaction.
+        """
         if self.board[row_index][col_index]['num_pieces'] < 3:
             return False
         # change ownership
@@ -229,7 +290,13 @@ class Logic:
             self.board[row_index][col_index]['player_id'] = 0
         return True
 
-    def process_bottom_right_corner(self, col_index, row_index):
+    def process_bottom_right_corner(self, col_index: int, row_index: int) -> bool:
+        """
+        Processes a cell that is a bottom right corner.
+        :param col_index: The column index of the cell being processed.
+        :param row_index: The row index of the cell being processed.
+        :return: A boolean value indicating whether the processing resulted in a chain reaction.
+        """
         if self.board[row_index][col_index]['num_pieces'] < 2:
             return False
         # change ownership
@@ -245,7 +312,13 @@ class Logic:
             self.board[row_index][col_index]['player_id'] = 0
         return True
 
-    def process_bottom_left_corner(self, col_index, row_index):
+    def process_bottom_left_corner(self, col_index: int, row_index: int) -> bool:
+        """
+        Processes a cell that is a bottom left corner.
+        :param col_index: The index of the column where the cell is located.
+        :param row_index: The index of the row where the cell is located.
+        :return: A boolean value indicating whether the processing resulted in a chain reaction.
+        """
         if self.board[row_index][col_index]['num_pieces'] < 2:
             return False
         # change ownership
@@ -262,7 +335,13 @@ class Logic:
             self.board[row_index][col_index]['player_id'] = 0
         return True
 
-    def process_top_right_corner(self, col_index, row_index):
+    def process_top_right_corner(self, col_index: int, row_index: int) -> bool:
+        """
+        Processes a cell that is a top right corner.
+        :param col_index: The column index of the cell being processed.
+        :param row_index: The row index of the cell being processed.
+        :return: A boolean value indicating whether the processing resulted in a chain reaction.
+        """
         if self.board[row_index][col_index]['num_pieces'] < 2:
             return False
         # change ownership
@@ -278,7 +357,13 @@ class Logic:
             self.board[row_index][col_index]['player_id'] = 0
         return True
 
-    def process_top_left_corner(self, col_index, row_index):
+    def process_top_left_corner(self, col_index: int, row_index: int) -> bool:
+        """
+        Processes a cell that is a top left corner.
+        :param col_index: The column index of the board position.
+        :param row_index: The row index of the board position.
+        :return: A boolean value indicating whether the processing resulted in a chain reaction.
+        """
         if self.board[row_index][col_index]['num_pieces'] < 2:
             return False
         # change ownership

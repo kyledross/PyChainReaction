@@ -4,14 +4,14 @@ import copy
 from game_logic.logic import Logic
 
 
-def find_best_play(board: list[list[dict[str, int]]], player_id: int):
+def find_best_play(board: list[list[dict[str, int]]], player_id: int) -> list[dict[str, int]]:
     """
     This routine will iteratively attempt to place a piece on each cell of a board, and then
     process the board for each move to see how effective the move was.  It scores each attempted move,
-    and then returns the best x,y move based on the highest score.
+    and then returns a list of the best moves.
     :param board: the game board
     :param player_id: the id of the player making the move
-    :return: x,y of the best move
+    :return: List of x,y, and score of the best moves
     """
     board_width = len(board[0])
     board_height = len(board)
@@ -39,14 +39,25 @@ def find_best_play(board: list[list[dict[str, int]]], player_id: int):
     return best_moves
 
 
-def choose_one_best_move(best_moves):
-    # Randomly select one of the best moves if there are ties
+def choose_one_best_move(best_moves: list[dict[str, int]]) -> tuple[int, int]:
+    """
+    Returns a single best move x,y from a list of 1 or more best moves.
+    If there are more than one best move, one will be chosen at random.
+    :param best_moves: A list of dictionaries containing possible best moves with their coordinates.
+    :return: A tuple containing the x and y coordinates of the chosen best move.
+    """
     best_move = random.choice(best_moves)
-    # Return the coordinates of the best move
     return best_move["x"], best_move["y"]
 
 
 def score_game_board(board: list[list[dict[str, int]]], player_id: int) -> int:
+    """
+    Scores a game board by counting the number of cells associated with a specific player.
+    :param board: A 2D list of dictionaries where each dictionary contains game-related attributes like 'player_id'.
+    :param player_id: An integer representing the player whose score is to be calculated.
+    :return: An integer representing the score of the specific player by counting the cells associated with the
+    player_id in the game board.
+    """
     count = 0
     for row in board:
         for cell in row:

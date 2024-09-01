@@ -11,8 +11,7 @@ class Logic:
     """
     Logic class handles the state and operations on a game board consisting of pieces placed by players.
 
-    :param board: A 2D list representing the game board.
-    Each cell is a dictionary containing 'player_id' and 'num_pieces'.
+    :param board: A 2D list representing the game board. Each cell is a dictionary containing 'player_id' and 'num_pieces'.
     """
 
     def __init__(self, board: list[list[dict[str, int]]]):
@@ -20,6 +19,11 @@ class Logic:
         self.send_debug_to_console: bool = False
 
     def validate_board_boundaries(self, row: int, col: int):
+        """
+        :param row: The row index where the piece is attempted to be placed.
+        :param col: The column index where the piece is attempted to be placed.
+        :return: None. Raises a ValueError if the row or column is outside the board boundaries.
+        """
         if row < 0:
             raise ValueError("Row can't be less than 0.")
         if row >= len(self.board):
@@ -30,6 +34,14 @@ class Logic:
             raise ValueError(f"A piece can't be placed at column {col} because the board only has {len(self.board[0])} columns.")
 
     def piece_placement_is_allowed(self, row: int, col: int, player_id: int) -> bool:
+        """
+        Checks to see if the specified player can place a piece at the specified location.
+        This is driven by whether or not another player's piece is already at the location.
+        :param row: The row index on the board where the player wants to place the piece.
+        :param col: The column index on the board where the player wants to place the piece.
+        :param player_id: The identifier for the player attempting to place the piece.
+        :return: A boolean value indicating whether the piece placement is allowed based on the game rules and current board state.
+        """
         self.validate_board_boundaries(row, col)
         validate_player_id(player_id)
         board_position = self.board[row][col]
@@ -120,7 +132,7 @@ class Logic:
         to, and side positions have three).
         This process continues iteratively until no more cells exceed their limits or all positions on the board contain
         one player's pieces.
-        :return: True if a win has been detected, False otherwise
+        :return: The id of the winning player, or zero if there is not yet a winner.
         """
 
         # Iterate through the index of rows in the board

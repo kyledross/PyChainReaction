@@ -2,6 +2,11 @@ def create_board(width: int, height: int) -> list[list[dict[str, int]]]:
     return [[{'player_id': 0, 'num_pieces': 0} for _ in range(width)] for _ in range(height)]
 
 
+def validate_player_id(player_id: int):
+    if player_id != 1 and player_id != 2:
+        raise ValueError(f"Player id {player_id} is not valid.")
+
+
 class Logic:
     """
     Logic class handles the state and operations on a game board consisting of pieces placed by players.
@@ -14,7 +19,19 @@ class Logic:
         self.board = board
         self.send_debug_to_console: bool = False
 
+    def validate_board_boundaries(self, row: int, col: int):
+        if row < 0:
+            raise ValueError("Row can't be less than 0.")
+        if row >= len(self.board):
+            raise ValueError(f"A piece can't be placed at row {row} because the board only has {len(self.board)} rows.")
+        if col < 0:
+            raise ValueError("Column can't be less than 0.")
+        if col < 0 or col >= len(self.board[0]):
+            raise ValueError(f"A piece can't be placed at column {col} because the board only has {len(self.board[0])} columns.")
+
     def piece_placement_is_allowed(self, row: int, col: int, player_id: int) -> bool:
+        self.validate_board_boundaries(row, col)
+        validate_player_id(player_id)
         board_position = self.board[row][col]
         if board_position['player_id'] == 0:
             return True
@@ -31,6 +48,8 @@ class Logic:
         :param player_id: the id of the player whose pieces are being placed
         :return: True if the placement is successful, False otherwise
         """
+        self.validate_board_boundaries(row, col)
+        validate_player_id(player_id)
         if not self.piece_placement_is_allowed(row, col, player_id):
             return False
         board_position = self.board[row][col]
@@ -45,6 +64,7 @@ class Logic:
         :return: The value of the position to the immediate left of the given position.
         :raises ValueError: If there is no position to the left.
         """
+        self.validate_board_boundaries(row, col)
         target_col = col - 1
         if target_col < 0:
             raise ValueError("Target column is less than zero")
@@ -57,6 +77,7 @@ class Logic:
         :return: The value at the position to the right of the current position as a dictionary.
         :raises ValueError: If there is no position to the right.
         """
+        self.validate_board_boundaries(row, col)
         target_col = col + 1
         if target_col >= len(self.board[0]):
             raise ValueError("Target column is greater than or equal to the length of the board")
@@ -69,6 +90,7 @@ class Logic:
         :return: The element at the position directly above the given row and column in the board
         :raises ValueError: If there is no position above the given position.
         """
+        self.validate_board_boundaries(row, col)
         target_row = row - 1
         if target_row < 0:
             raise ValueError("Target row is less than zero")
@@ -81,6 +103,7 @@ class Logic:
         :return: The element in the position directly below the specified (row, col) on the board if it exists.
         :raises ValueError: If there is no position below the given position.
         """
+        self.validate_board_boundaries(row, col)
         target_row = row + 1
         if target_row >= len(self.board):
             raise ValueError("Target row is greater than or equal to the length of the board")
@@ -190,6 +213,7 @@ class Logic:
         :param row_index: The row index of the position to be processed.
         :return: A boolean value indicating whether the processing resulted in a chain reaction.
         """
+        self.validate_board_boundaries(row_index, col_index)
         if self.board[row_index][col_index]['num_pieces'] < 4:
             return False
         # change ownership
@@ -217,6 +241,7 @@ class Logic:
         :param row_index: The row index of the position on the board to be processed.
         :return: A boolean value indicating whether the processing resulted in a chain reaction.
         """
+        self.validate_board_boundaries(row_index, col_index)
         if self.board[row_index][col_index]['num_pieces'] < 3:
             return False
         # change ownership
@@ -241,6 +266,7 @@ class Logic:
         :param row_index: The row index of the cell being processed.
         :return: A boolean value indicating whether the processing resulted in a chain reaction.
         """
+        self.validate_board_boundaries(row_index, col_index)
         if self.board[row_index][col_index]['num_pieces'] < 3:
             return False
         # change ownership
@@ -266,6 +292,7 @@ class Logic:
         :param row_index: The row index of the cell being processed on the board.
         :return: A boolean value indicating whether the processing resulted in a chain reaction.
         """
+        self.validate_board_boundaries(row_index, col_index)
         if self.board[row_index][col_index]['num_pieces'] < 3:
             return False
         # change ownership
@@ -291,6 +318,7 @@ class Logic:
         :param row_index: Row index of the cell being processed
         :return: A boolean value indicating whether the processing resulted in a chain reaction.
         """
+        self.validate_board_boundaries(row_index, col_index)
         if self.board[row_index][col_index]['num_pieces'] < 3:
             return False
         # change ownership
@@ -316,6 +344,7 @@ class Logic:
         :param row_index: The row index of the cell being processed.
         :return: A boolean value indicating whether the processing resulted in a chain reaction.
         """
+        self.validate_board_boundaries(row_index, col_index)
         if self.board[row_index][col_index]['num_pieces'] < 2:
             return False
         # change ownership
@@ -338,6 +367,7 @@ class Logic:
         :param row_index: The index of the row where the cell is located.
         :return: A boolean value indicating whether the processing resulted in a chain reaction.
         """
+        self.validate_board_boundaries(row_index, col_index)
         if self.board[row_index][col_index]['num_pieces'] < 2:
             return False
         # change ownership
@@ -361,6 +391,7 @@ class Logic:
         :param row_index: The row index of the cell being processed.
         :return: A boolean value indicating whether the processing resulted in a chain reaction.
         """
+        self.validate_board_boundaries(row_index, col_index)
         if self.board[row_index][col_index]['num_pieces'] < 2:
             return False
         # change ownership
@@ -383,6 +414,7 @@ class Logic:
         :param row_index: The row index of the board position.
         :return: A boolean value indicating whether the processing resulted in a chain reaction.
         """
+        self.validate_board_boundaries(row_index, col_index)
         if self.board[row_index][col_index]['num_pieces'] < 2:
             return False
         # change ownership

@@ -1,6 +1,6 @@
 import unittest
 
-from computer_logic import basic_strategy
+from src.computer_logic import basic_strategy
 
 
 class TestBasicStrategy(unittest.TestCase):

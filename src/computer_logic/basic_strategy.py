@@ -1,6 +1,7 @@
-import game_logic.logic
 import random
 import copy
+
+from logic import Logic
 
 
 def find_best_play(board: list[list[dict[str, int]]], player_id: int):
@@ -20,14 +21,14 @@ def find_best_play(board: list[list[dict[str, int]]], player_id: int):
 
     for y in range(board_height):
         for x in range(board_width):
-            logic = game_logic.logic.Logic(copy.deepcopy(board))
-            if logic.place_piece(y, x, player_id):
+            logic_instance = Logic(copy.deepcopy(board))
+            if logic_instance.place_piece(y, x, player_id):
                 # placement was successful
                 # process the board
-                board_changed = logic.process_board()
+                board_changed = logic_instance.process_board()
                 # this move caused a reaction
                 # score the result
-                score: int = score_game_board(logic.board, player_id)
+                score: int = score_game_board(logic_instance.board, player_id)
                 scored_moves.append({"x": x, "y": y, "score": score})
             else:
                 scored_moves.append({"x": x, "y": y, "score": 0}) # this move isn't allowed

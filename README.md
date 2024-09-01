@@ -11,9 +11,7 @@ https://www.atarimagazines.com/compute/issue80/chain_reaction.php and https://ar
 ### This Implementation
 
 This is a completely original rewrite of the game in the Compute! magazine.  The game rules are rewritten but are
-the same rules of gameplay. The initial implementation of the computer decision making will be ported from the
-original, but may be replaced with more intelligent decision making in the future.  (Who knows, maybe this will be
-my first leap into machine-learning.)
+the same rules of gameplay.
 
 ### Credits
 

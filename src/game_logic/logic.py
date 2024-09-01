@@ -86,7 +86,7 @@ class Logic:
             raise ValueError("Target row is greater than or equal to the length of the board")
         return self.board[target_row][col]
 
-    def process_board(self) -> bool:
+    def process_board(self) -> int:
         """
         Process board will go through each row and column and check to see if there are too many pieces in the position.
         The corner positions can have up to 2 pieces max.
@@ -135,9 +135,10 @@ class Logic:
                     if self.send_debug_to_console:
                         print("After:")
                         self.print_board()
-                    if self.winner_determined():
-                        return True
-        return False
+                    winner_id = self.winner_id()
+                    if winner_id != 0:
+                        return winner_id
+        return 0
 
     def print_board(self) -> None:
         """
@@ -155,10 +156,10 @@ class Logic:
         print(col_headers)
         print()
 
-    def winner_determined(self) -> bool:
+    def winner_id(self) -> int:
         """
         Checks to see if every occupied position is owned by one player
-        :return: True if there is a winner, False otherwise
+        :return: Winning player id, 0 if there is no winner.
         """
         occupied_count: int = 0
         player_1_count: int = 0
@@ -175,7 +176,12 @@ class Logic:
         winner = occupied_count > 1 and (occupied_count == player_1_count or occupied_count == player_2_count)
         if winner and self.send_debug_to_console:
             print("Winner determined.")
-        return winner
+        if winner and player_1_count != 0:
+            return 1
+        elif winner and player_2_count != 0:
+            return 2
+        else:
+            return 0
 
     def process_inner_position(self, col_index: int, row_index: int) -> bool:
         """

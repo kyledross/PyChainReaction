@@ -14,22 +14,19 @@ class TestLogic(unittest.TestCase):
             [{'player_id': 1, 'num_pieces': 1}, {'player_id': 1, 'num_pieces': 1}],
             [{'player_id': 1, 'num_pieces': 1}, {'player_id': 0, 'num_pieces': 0}]
         ]
-        result = self.logic.winner_determined()
-        self.assertEqual(result, True)
+        self.assertEqual(self.logic.winner_id(), 1)
 
         self.logic.board = [
             [{'player_id': 1, 'num_pieces': 1}, {'player_id': 2, 'num_pieces': 1}],
             [{'player_id': 1, 'num_pieces': 1}, {'player_id': 0, 'num_pieces': 0}]
         ]
-        result = self.logic.winner_determined()
-        self.assertEqual(result, False)
+        self.assertEqual(self.logic.winner_id(), 0)
 
         self.logic.board = [
             [{'player_id': 0, 'num_pieces': 0}, {'player_id': 0, 'num_pieces': 0}],
             [{'player_id': 0, 'num_pieces': 0}, {'player_id': 0, 'num_pieces': 0}]
         ]
-        result = self.logic.winner_determined()
-        self.assertEqual(result, False)
+        self.assertEqual(self.logic.winner_id(), 0)
 
 
 if __name__ == "__main__":

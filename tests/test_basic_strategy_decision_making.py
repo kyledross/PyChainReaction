@@ -26,17 +26,16 @@ class TestBasicStrategyDecisionMaking(unittest.TestCase):
         self.assertEqual(best_move["x"], 0)
         self.assertEqual(best_move["y"], 1)
 
-    def test_best_move_two_choices_yield_same_result(self):
+    def test_best_move_two_adjacent_choices(self):
         board = [
             [{'player_id': 1, 'num_pieces': 1}, {'player_id': 0, 'num_pieces': 0}, {'player_id': 0, 'num_pieces': 0}],
             [{'player_id': 0, 'num_pieces': 0}, {'player_id': 0, 'num_pieces': 0}, {'player_id': 0, 'num_pieces': 0}],
             [{'player_id': 1, 'num_pieces': 1}, {'player_id': 2, 'num_pieces': 2}, {'player_id': 2, 'num_pieces': 1}]
         ]
         result = basic_strategy.find_best_moves(board, 2)
-        self.assertIn({'x': 2, 'y': 1, 'score': 4}, result)
-        self.assertIn({'x': 2, 'y': 2, 'score': 4}, result)
+        self.assertIn({'x': 2, 'y': 2, 'score': 5}, result)
         best_move = basic_strategy.choose_one_best_move(result)
-        self.assertIn((best_move["x"], best_move["y"]), [(2, 1), (2, 2)])
+        self.assertIn((best_move["x"], best_move["y"]), [(2, 2)])
 
     def test_other_players_cells_should_not_be_suggested_moves(self):
         # this came from a test run of pc vs pc

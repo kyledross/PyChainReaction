@@ -150,29 +150,30 @@ class Logic:
                         print("Before:")
                         self.print_board()
                     if row_index == row_top and col_index == col_left:
-                        board_changed = self.process_top_left_corner(col_index, row_index)
+                        board_changed = board_changed or self.process_top_left_corner(col_index, row_index)
                     elif row_index == row_top and col_index == col_right:
-                        board_changed = self.process_top_right_corner(col_index, row_index)
+                        board_changed = board_changed or self.process_top_right_corner(col_index, row_index)
                     elif row_index == row_bottom and col_index == col_left:
-                        board_changed = self.process_bottom_left_corner(col_index, row_index)
+                        board_changed = board_changed or self.process_bottom_left_corner(col_index, row_index)
                     elif row_index == row_bottom and col_index == col_right:
-                        board_changed = self.process_bottom_right_corner(col_index, row_index)
+                        board_changed = board_changed or self.process_bottom_right_corner(col_index, row_index)
                     elif row_index == row_top:
-                        board_changed = self.process_top_edge(col_index, row_index)
+                        board_changed = board_changed or self.process_top_edge(col_index, row_index)
                     elif row_index == row_bottom:
-                        board_changed = self.process_bottom_edge(col_index, row_index)
+                        board_changed = board_changed or self.process_bottom_edge(col_index, row_index)
                     elif col_index == col_left:
-                        board_changed = self.process_left_edge(col_index, row_index)
+                        board_changed = board_changed or self.process_left_edge(col_index, row_index)
                     elif col_index == col_right:
-                        board_changed = self.process_right_edge(col_index, row_index)
+                        board_changed = board_changed or self.process_right_edge(col_index, row_index)
                     else:
-                        board_changed = self.process_inner_position(col_index, row_index)
+                        board_changed = board_changed or self.process_inner_position(col_index, row_index)
                     if self.send_debug_to_console:
                         print("After:")
                         self.print_board()
-                    winner_id = self.winner_id()
-                    if winner_id != 0:
-                        return winner_id
+            if self.winner_id() != 0:
+                break
+        if self.winner_id() != 0:
+            return self.winner_id()
         return 0
 
     def print_board(self) -> None:

@@ -1,6 +1,7 @@
 import unittest
 
 from game_logic.logic import Logic
+from game_logic import logic
 
 
 class TestGamePlay(unittest.TestCase):
@@ -68,6 +69,30 @@ class TestGamePlay(unittest.TestCase):
         game.place_piece(0, 0, 1)
         winner_id = game.process_board()
         self.assertEqual(winner_id, 1)
+
+    def test_chain_results_in_edge_overflow(self):
+        board = logic.create_board(3, 3)
+        game = Logic(board)
+        # place 2 pieces in upper-right corner so it will cause chain reaction
+        game.place_piece(0, 2, 1)
+        game.place_piece(0, 2, 1)
+        
+        # place player 2 somewhere safe
+        game.place_piece(2,0, 2)
+
+        # place 2 pieces in upper-middle
+        game.place_piece(0, 1, 1)
+        game.place_piece(0, 1, 1)
+
+        # process board
+        game.process_board()
+        game.print_board()
+
+        self.assertEqual(game.board[0][1]['num_pieces'], 0)
+        self.assertEqual(game.board[0][1]['player_id'], 0)
+
+
+
 
 
 if __name__ == '__main__':

@@ -84,9 +84,9 @@ class TestGamePlay(unittest.TestCase):
         # place 2 pieces in upper-right corner so it will cause chain reaction
         game.place_piece(0, 2, 1)
         game.place_piece(0, 2, 1)
-        
+
         # place player 2 somewhere safe
-        game.place_piece(2,0, 2)
+        game.place_piece(2, 0, 2)
 
         # place 2 pieces in upper-middle
         game.place_piece(0, 1, 1)
@@ -117,9 +117,17 @@ class TestGamePlay(unittest.TestCase):
             pass
         winner_id = game.winner_id()
         self.assertEqual(winner_id, 1)
-        self.assertEqual(game.board_change_list, {(0, 0): [(1, 0), (0, 1)]})
+        self.assertEqual(len(game.board_change_list), 2)
 
+        self.assertEqual(game.board_change_list[0]["from"]["col"], 0)
+        self.assertEqual(game.board_change_list[0]["from"]["row"], 0)
+        self.assertEqual(game.board_change_list[0]["to"]["col"], 0)
+        self.assertEqual(game.board_change_list[0]["to"]["row"], 1)
 
+        self.assertEqual(game.board_change_list[1]["from"]["col"], 0)
+        self.assertEqual(game.board_change_list[1]["from"]["row"], 0)
+        self.assertEqual(game.board_change_list[1]["to"]["col"], 1)
+        self.assertEqual(game.board_change_list[1]["to"]["row"], 0)
 
 
 if __name__ == '__main__':

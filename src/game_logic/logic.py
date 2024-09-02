@@ -17,7 +17,7 @@ class Logic:
     def __init__(self, board: list[list[dict[str, int]]]):
         self.board = board
         self.send_debug_to_console: bool = False
-        self.board_change_list = {}
+        self.board_change_list = []
 
     def validate_board_boundaries(self, row: int, col: int):
         """
@@ -79,10 +79,12 @@ class Logic:
         :param target_col: The column index of the target position to move to.
         :return: None
         """
-        # todo: this needs to be dictionaries so it's clear what we're looking at
-        if (row, col) not in self.board_change_list:
-            self.board_change_list[(row, col)] = []
-        self.board_change_list[(row, col)].append((target_row, target_col))
+
+        move = {
+            'from': {'row': row, 'col': col},
+            'to': {'row': target_row, 'col': target_col}
+        }
+        self.board_change_list.append(move)
 
     def get_position_to_the_left(self, row: int, col: int) -> dict:
         """
@@ -155,7 +157,7 @@ class Logic:
         row_bottom: int = len(self.board) - 1
         col_left: int = 0
         col_right: int = len(self.board[0]) - 1
-        self.board_change_list = {}
+        self.board_change_list = []
         board_changed = False
         for row_index in range(len(self.board)):
             for col_index in range(len(self.board[row_index])):

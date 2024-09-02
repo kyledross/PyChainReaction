@@ -88,7 +88,6 @@ def main():
                         hovered_cell = (-1, -1)  # Reset hovered cell after a move
 
             elif event.type == pygame.MOUSEMOTION:
-                prev_hovered_cell = hovered_cell
                 mouse_x, mouse_y = event.pos
                 new_row = mouse_y // CELL_SIZE
                 new_col = mouse_x // CELL_SIZE

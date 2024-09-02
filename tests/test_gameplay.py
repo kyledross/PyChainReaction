@@ -10,15 +10,19 @@ class TestGamePlay(unittest.TestCase):
         game = Logic(self.board)
 
         game.place_piece(0, 0, 1)
-        game.process_board()
+        while game.process_board():
+            pass
         self.assertEqual(game.winner_id(), 0)
 
         game.place_piece(0, 1, 2)
-        game.process_board()
+        while game.process_board():
+            pass
         self.assertEqual(game.winner_id(), 0)
 
         game.place_piece(0, 0, 1)
-        winner_id: int = game.process_board()
+        while game.process_board():
+            pass
+        winner_id = game.winner_id()
         self.assertEqual(winner_id, 1)
 
     def test_full_board_flip(self):
@@ -61,13 +65,17 @@ class TestGamePlay(unittest.TestCase):
         # player 3 has 1 corner piece
         game.place_piece(2, 2, 2)
 
-        winner_id = game.process_board()
+        while game.process_board():
+            pass
+        winner_id = game.winner_id()
         self.assertEqual(winner_id, 0)
 
         # player 1 places piece into top left corner,
         # causing a cascade that takes over the board and wins
         game.place_piece(0, 0, 1)
-        winner_id = game.process_board()
+        while game.process_board():
+            pass
+        winner_id = game.winner_id()
         self.assertEqual(winner_id, 1)
 
     def test_chain_results_in_edge_overflow(self):
@@ -85,12 +93,31 @@ class TestGamePlay(unittest.TestCase):
         game.place_piece(0, 1, 1)
 
         # process board
-        game.process_board()
+        while game.process_board():
+            pass
         game.print_board()
 
         self.assertEqual(game.board[0][1]['num_pieces'], 0)
         self.assertEqual(game.board[0][1]['player_id'], 0)
 
+    def test_board_change_list(self):
+        self.board = [[{'player_id': 0, 'num_pieces': 0} for _ in range(3)] for _ in range(3)]
+        game = Logic(self.board)
+
+        game.place_piece(0, 0, 1)
+        while game.process_board():
+            pass
+
+        game.place_piece(0, 1, 2)
+        while game.process_board():
+            pass
+
+        game.place_piece(0, 0, 1)
+        while game.process_board():
+            pass
+        winner_id = game.winner_id()
+        self.assertEqual(winner_id, 1)
+        self.assertEqual(game.board_change_list, {(0, 0): [(1, 0), (0, 1)]})
 
 
 

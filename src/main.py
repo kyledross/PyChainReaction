@@ -81,7 +81,11 @@ def main():
                     if not game_logic.place_piece(row, col, current_player):
                         print("Invalid move, try again.")
                     else:
-                        game_over = game_logic.process_board()
+
+                        while game_logic.process_board():
+                            # todo: implement animation here
+                            pass
+                        game_over = game_logic.winner_id()
                         if game_over:
                             display_winner(game_over)
                         current_player = 1 if current_player == 2 else 2  # Toggle player

@@ -17,6 +17,7 @@ class Logic:
     def __init__(self, board: list[list[dict[str, int]]]):
         self.board = board
         self.send_debug_to_console: bool = False
+        self.board_change_list = {}
 
     def validate_board_boundaries(self, row: int, col: int):
         """
@@ -31,7 +32,8 @@ class Logic:
         if col < 0:
             raise ValueError("Column can't be less than 0.")
         if col < 0 or col >= len(self.board[0]):
-            raise ValueError(f"A piece can't be placed at column {col} because the board only has {len(self.board[0])} columns.")
+            raise ValueError(
+                f"A piece can't be placed at column {col} because the board only has {len(self.board[0])} columns.")
 
     def piece_placement_is_allowed(self, row: int, col: int, player_id: int) -> bool:
         """
@@ -68,6 +70,19 @@ class Logic:
         board_position['player_id'] = player_id
         board_position['num_pieces'] += 1
         return True
+
+    def add_move_to_board_change_list(self, row: int, col: int, target_row: int, target_col: int):
+        """
+        :param row: The row index of the current position on the board.
+        :param col: The column index of the current position on the board.
+        :param target_row: The row index of the target position to move to.
+        :param target_col: The column index of the target position to move to.
+        :return: None
+        """
+        # todo: this needs to be dictionaries so it's clear what we're looking at
+        if (row, col) not in self.board_change_list:
+            self.board_change_list[(row, col)] = []
+        self.board_change_list[(row, col)].append((target_row, target_col))
 
     def get_position_to_the_left(self, row: int, col: int) -> dict:
         """
@@ -121,7 +136,7 @@ class Logic:
             raise ValueError("Target row is greater than or equal to the length of the board")
         return self.board[target_row][col]
 
-    def process_board(self) -> int:
+    def process_board(self) -> bool:
         """
         Process board will go through each row and column and check to see if there are too many pieces in the position.
         The corner positions can have up to 2 pieces max.
@@ -132,7 +147,7 @@ class Logic:
         to, and side positions have three).
         This process continues iteratively until no more cells exceed their limits or all positions on the board contain
         one player's pieces.
-        :return: The id of the winning player, or zero if there is not yet a winner.
+        :return: True if another round of processing might be needed, False otherwise.
         """
 
         # Iterate through the index of rows in the board
@@ -140,41 +155,38 @@ class Logic:
         row_bottom: int = len(self.board) - 1
         col_left: int = 0
         col_right: int = len(self.board[0]) - 1
-
-        board_changed: bool = True
-        while board_changed:
-            board_changed = False
-            for row_index in range(len(self.board)):
-                for col_index in range(len(self.board[row_index])):
-                    if self.send_debug_to_console:
-                        print("Before:")
-                        self.print_board()
-                    if row_index == row_top and col_index == col_left:
-                        board_changed = board_changed or self.process_top_left_corner(col_index, row_index)
-                    elif row_index == row_top and col_index == col_right:
-                        board_changed = board_changed or self.process_top_right_corner(col_index, row_index)
-                    elif row_index == row_bottom and col_index == col_left:
-                        board_changed = board_changed or self.process_bottom_left_corner(col_index, row_index)
-                    elif row_index == row_bottom and col_index == col_right:
-                        board_changed = board_changed or self.process_bottom_right_corner(col_index, row_index)
-                    elif row_index == row_top:
-                        board_changed = board_changed or self.process_top_edge(col_index, row_index)
-                    elif row_index == row_bottom:
-                        board_changed = board_changed or self.process_bottom_edge(col_index, row_index)
-                    elif col_index == col_left:
-                        board_changed = board_changed or self.process_left_edge(col_index, row_index)
-                    elif col_index == col_right:
-                        board_changed = board_changed or self.process_right_edge(col_index, row_index)
-                    else:
-                        board_changed = board_changed or self.process_inner_position(col_index, row_index)
-                    if self.send_debug_to_console:
-                        print("After:")
-                        self.print_board()
-            if self.winner_id() != 0:
-                break
+        self.board_change_list = {}
+        board_changed = False
+        for row_index in range(len(self.board)):
+            for col_index in range(len(self.board[row_index])):
+                if self.send_debug_to_console:
+                    print("Before:")
+                    self.print_board()
+                if row_index == row_top and col_index == col_left:
+                    board_changed = self.process_top_left_corner(col_index, row_index) or board_changed
+                elif row_index == row_top and col_index == col_right:
+                    board_changed = self.process_top_right_corner(col_index, row_index) or board_changed
+                elif row_index == row_bottom and col_index == col_left:
+                    board_changed = self.process_bottom_left_corner(col_index, row_index) or board_changed
+                elif row_index == row_bottom and col_index == col_right:
+                    board_changed = self.process_bottom_right_corner(col_index, row_index) or board_changed
+                elif row_index == row_top:
+                    board_changed = self.process_top_edge(col_index, row_index) or board_changed
+                elif row_index == row_bottom:
+                    board_changed = self.process_bottom_edge(col_index, row_index) or board_changed
+                elif col_index == col_left:
+                    board_changed = self.process_left_edge(col_index, row_index) or board_changed
+                elif col_index == col_right:
+                    board_changed = self.process_right_edge(col_index, row_index) or board_changed
+                else:
+                    board_changed = self.process_inner_position(col_index, row_index) or board_changed
+                if self.send_debug_to_console:
+                    print("After:")
+                    self.print_board()
+        # if there is a winner, no more processing is needed
         if self.winner_id() != 0:
-            return self.winner_id()
-        return 0
+            return False
+        return board_changed
 
     def print_board(self) -> None:
         """
@@ -236,16 +248,32 @@ class Logic:
         self.get_position_to_the_right(row_index, col_index)['player_id'] = self.board[row_index][col_index][
             'player_id']
         # move pieces
-        self.get_position_above(row_index, col_index)['num_pieces'] += 1
-        self.get_position_below(row_index, col_index)['num_pieces'] += 1
-        self.get_position_to_the_left(row_index, col_index)['num_pieces'] += 1
-        self.get_position_to_the_right(row_index, col_index)['num_pieces'] += 1
+        self.move_piece_up(col_index, row_index)
+        self.move_piece_down(col_index, row_index)
+        self.move_piece_left(col_index, row_index)
+        self.move_piece_right(col_index, row_index)
         # deduct pieces from source cell
         self.board[row_index][col_index]['num_pieces'] -= 4
         if self.board[row_index][col_index]['num_pieces'] == 0:
             # unassign cell
             self.board[row_index][col_index]['player_id'] = 0
         return True
+
+    def move_piece_right(self, col_index, row_index):
+        self.get_position_to_the_right(row_index, col_index)['num_pieces'] += 1
+        self.add_move_to_board_change_list(row_index, col_index,row_index, col_index + 1)
+
+    def move_piece_left(self, col_index, row_index):
+        self.get_position_to_the_left(row_index, col_index)['num_pieces'] += 1
+        self.add_move_to_board_change_list(row_index, col_index,row_index, col_index - 1)
+
+    def move_piece_up(self, col_index, row_index):
+        self.get_position_above(row_index, col_index)['num_pieces'] += 1
+        self.add_move_to_board_change_list(row_index, col_index,row_index - 1, col_index)
+
+    def move_piece_down(self, col_index, row_index):
+        self.get_position_below(row_index, col_index)['num_pieces'] += 1
+        self.add_move_to_board_change_list(row_index, col_index,row_index + 1, col_index)
 
     def process_right_edge(self, col_index: int, row_index: int) -> bool:
         """
@@ -262,9 +290,9 @@ class Logic:
         self.get_position_below(row_index, col_index)['player_id'] = self.board[row_index][col_index]['player_id']
         self.get_position_to_the_left(row_index, col_index)['player_id'] = self.board[row_index][col_index]['player_id']
         # move pieces
-        self.get_position_above(row_index, col_index)['num_pieces'] += 1
-        self.get_position_below(row_index, col_index)['num_pieces'] += 1
-        self.get_position_to_the_left(row_index, col_index)['num_pieces'] += 1
+        self.move_piece_up(col_index, row_index)
+        self.move_piece_down(col_index, row_index)
+        self.move_piece_left(col_index, row_index)
         # deduct pieces from source cell
         self.board[row_index][col_index]['num_pieces'] -= 3
         if self.board[row_index][col_index]['num_pieces'] == 0:
@@ -288,9 +316,9 @@ class Logic:
         self.get_position_to_the_right(row_index, col_index)['player_id'] = self.board[row_index][col_index][
             'player_id']
         # move pieces
-        self.get_position_above(row_index, col_index)['num_pieces'] += 1
-        self.get_position_below(row_index, col_index)['num_pieces'] += 1
-        self.get_position_to_the_right(row_index, col_index)['num_pieces'] += 1
+        self.move_piece_up(col_index, row_index)
+        self.move_piece_down(col_index, row_index)
+        self.move_piece_right(col_index, row_index)
         # deduct pieces from source cell
         self.board[row_index][col_index]['num_pieces'] -= 3
         if self.board[row_index][col_index]['num_pieces'] == 0:
@@ -314,9 +342,9 @@ class Logic:
         self.get_position_to_the_right(row_index, col_index)['player_id'] = self.board[row_index][col_index][
             'player_id']
         # move pieces
-        self.get_position_above(row_index, col_index)['num_pieces'] += 1
-        self.get_position_to_the_left(row_index, col_index)['num_pieces'] += 1
-        self.get_position_to_the_right(row_index, col_index)['num_pieces'] += 1
+        self.move_piece_up(col_index, row_index)
+        self.move_piece_left(col_index, row_index)
+        self.move_piece_right(col_index, row_index)
         # deduct pieces from source cell
         self.board[row_index][col_index]['num_pieces'] -= 3
         if self.board[row_index][col_index]['num_pieces'] == 0:
@@ -340,9 +368,9 @@ class Logic:
         self.get_position_to_the_right(row_index, col_index)['player_id'] = self.board[row_index][col_index][
             'player_id']
         # move pieces
-        self.get_position_below(row_index, col_index)['num_pieces'] += 1
-        self.get_position_to_the_left(row_index, col_index)['num_pieces'] += 1
-        self.get_position_to_the_right(row_index, col_index)['num_pieces'] += 1
+        self.move_piece_down(col_index, row_index)
+        self.move_piece_left(col_index, row_index)
+        self.move_piece_right(col_index, row_index)
         # deduct pieces from source cell
         self.board[row_index][col_index]['num_pieces'] -= 3
         if self.board[row_index][col_index]['num_pieces'] == 0:
@@ -364,8 +392,8 @@ class Logic:
         self.get_position_above(row_index, col_index)['player_id'] = self.board[row_index][col_index]['player_id']
         self.get_position_to_the_left(row_index, col_index)['player_id'] = self.board[row_index][col_index]['player_id']
         # move pieces
-        self.get_position_above(row_index, col_index)['num_pieces'] += 1
-        self.get_position_to_the_left(row_index, col_index)['num_pieces'] += 1
+        self.move_piece_up(col_index, row_index)
+        self.move_piece_left(col_index, row_index)
         # deduct pieces from source cell
         self.board[row_index][col_index]['num_pieces'] -= 2
         if self.board[row_index][col_index]['num_pieces'] == 0:
@@ -388,8 +416,8 @@ class Logic:
         self.get_position_to_the_right(row_index, col_index)['player_id'] = self.board[row_index][col_index][
             'player_id']
         # move pieces
-        self.get_position_above(row_index, col_index)['num_pieces'] += 1
-        self.get_position_to_the_right(row_index, col_index)['num_pieces'] += 1
+        self.move_piece_up(col_index, row_index)
+        self.move_piece_right(col_index, row_index)
         # deduct pieces from source cell
         self.board[row_index][col_index]['num_pieces'] -= 2
         if self.board[row_index][col_index]['num_pieces'] == 0:
@@ -411,8 +439,8 @@ class Logic:
         self.get_position_below(row_index, col_index)['player_id'] = self.board[row_index][col_index]['player_id']
         self.get_position_to_the_left(row_index, col_index)['player_id'] = self.board[row_index][col_index]['player_id']
         # move pieces
-        self.get_position_below(row_index, col_index)['num_pieces'] += 1
-        self.get_position_to_the_left(row_index, col_index)['num_pieces'] += 1
+        self.move_piece_down(col_index, row_index)
+        self.move_piece_left(col_index, row_index)
         # deduct pieces from source cell
         self.board[row_index][col_index]['num_pieces'] -= 2
         if self.board[row_index][col_index]['num_pieces'] == 0:
@@ -435,8 +463,8 @@ class Logic:
         self.get_position_to_the_right(row_index, col_index)['player_id'] = self.board[row_index][col_index][
             'player_id']
         # move pieces
-        self.get_position_below(row_index, col_index)['num_pieces'] += 1
-        self.get_position_to_the_right(row_index, col_index)['num_pieces'] += 1
+        self.move_piece_down(col_index, row_index)
+        self.move_piece_right(col_index, row_index)
         # deduct pieces from source cell
         self.board[row_index][col_index]['num_pieces'] -= 2
         if self.board[row_index][col_index]['num_pieces'] == 0:

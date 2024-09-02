@@ -71,37 +71,37 @@ def main():
     global current_player
 
     while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if hovered_cell != (-1, -1):
-                    row, col = hovered_cell
-                    if not game_logic.place_piece(row, col, current_player):
-                        print("Invalid move, try again.")
-                    else:
-
-                        while game_logic.process_board():
-                            # todo: implement animation here
-                            pass
-                        game_over = game_logic.winner_id()
-                        if game_over:
-                            display_winner(game_over)
-                        current_player = 1 if current_player == 2 else 2  # Toggle player
-                        hovered_cell = (-1, -1)  # Reset hovered cell after a move
-
-            elif event.type == pygame.MOUSEMOTION:
-                mouse_x, mouse_y = event.pos
-                new_row = mouse_y // CELL_SIZE
-                new_col = mouse_x // CELL_SIZE
-
-                if 0 <= new_row < ROWS and 0 <= new_col < COLS:
-                    hovered_cell = (new_row, new_col)
+        event = pygame.event.wait()
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            if hovered_cell != (-1, -1):
+                row, col = hovered_cell
+                if not game_logic.place_piece(row, col, current_player):
+                    print("Invalid move, try again.")
                 else:
-                    hovered_cell = (-1, -1)
-            elif event.type == pygame.WINDOWLEAVE:
+
+                    while game_logic.process_board():
+                        # todo: implement animation here
+                        pass
+                    game_over = game_logic.winner_id()
+                    if game_over:
+                        display_winner(game_over)
+                    current_player = 1 if current_player == 2 else 2  # Toggle player
+                    hovered_cell = (-1, -1)  # Reset hovered cell after a move
+
+        elif event.type == pygame.MOUSEMOTION:
+            mouse_x, mouse_y = event.pos
+            new_row = mouse_y // CELL_SIZE
+            new_col = mouse_x // CELL_SIZE
+
+            if 0 <= new_row < ROWS and 0 <= new_col < COLS:
+                hovered_cell = (new_row, new_col)
+            else:
                 hovered_cell = (-1, -1)
+        elif event.type == pygame.WINDOWLEAVE:
+            hovered_cell = (-1, -1)
 
 
         refresh_screen()

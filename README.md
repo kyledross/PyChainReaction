@@ -9,8 +9,7 @@ copy-pasted OCR version of the program from a scanned issue of the magazine that
 
 ### This Implementation
 
-This is a completely original rewrite of the game in the Compute! magazine.  The game rules are rewritten but are
-the same rules of gameplay.
+This is a completely original rewrite of the game, using the same basic design and game rules.
 
 ### Code Style
 
@@ -21,7 +20,7 @@ Refactorings and optimizations can come later after the game logic and behavior 
 ### Credits
 
 All credit for the design of this game goes to Mark Tuttle, Tim Midkiff, and Compute!
-magazine.  This effort is only an attempt to port the code to Python so that it can continue to be enjoyed in new ways.
+magazine. This effort is only an attempt to recreate the game in Python so that it can continue to be enjoyed in new ways.
 
 ### Sources For Original Program
 These are the online sources where I found the original program. They are viable links as of August 2024.

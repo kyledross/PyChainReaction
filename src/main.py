@@ -16,7 +16,7 @@ PLAYER_COLORS = {1: (0, 255, 0), 2: (255, 0, 0)}
 # Initialize PyGame
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption('Game Board')
+pygame.display.set_caption('Chain Reaction')
 font = pygame.font.Font(None, 36)
 
 # Initialize the game logic
@@ -79,7 +79,8 @@ def main():
             if hovered_cell != (-1, -1):
                 row, col = hovered_cell
                 if not game_logic.place_piece(row, col, current_player):
-                    print("Invalid move, try again.")
+                    # todo: add invalid move sound feedback here
+                    pass
                 else:
 
                     while game_logic.process_board():
@@ -102,7 +103,6 @@ def main():
                 hovered_cell = (-1, -1)
         elif event.type == pygame.WINDOWLEAVE:
             hovered_cell = (-1, -1)
-
 
         refresh_screen()
 

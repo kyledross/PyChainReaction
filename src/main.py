@@ -96,6 +96,9 @@ def main():
                     hovered_cell = (new_row, new_col)
                 else:
                     hovered_cell = (-1, -1)
+            elif event.type == pygame.WINDOWLEAVE:
+                hovered_cell = (-1, -1)
+
 
         refresh_screen()
 

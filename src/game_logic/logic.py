@@ -1,4 +1,4 @@
-def create_board(width: int, height: int) -> list[list[dict[str, int]]]:
+def create_board(height: int, width: int) -> list[list[dict[str, int]]]:
     return [[{'player_id': 0, 'num_pieces': 0} for _ in range(width)] for _ in range(height)]
 
 

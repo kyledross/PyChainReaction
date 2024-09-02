@@ -3,7 +3,9 @@ from game_logic import logic
 
 
 def main():
-    board = logic.create_board(6, 5)
+    board_width: int = 10
+    board_height: int = 10
+    board = logic.create_board(board_height, board_width)
     game_logic = logic.Logic(board)
     computer1_player_id: int = 1
     computer2_player_id: int = 2

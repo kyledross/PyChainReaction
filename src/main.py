@@ -87,8 +87,6 @@ def main():
         hovered_cell = (-1, -1)  # Reset hovered cell after a move
 
 
-
-
 def human_turn(current_player_id):
     global hovered_cell
     while True:
@@ -122,11 +120,15 @@ def human_turn(current_player_id):
             hovered_cell = (-1, -1)
         refresh_screen()
 
+
 def computer_turn(current_player_id: int, opponent_player_id: int):
     global hovered_cell
-    possible_computer_turns = computer_logic.basic_strategy.find_best_moves(game_logic.board, current_player_id, opponent_player_id)
+    current_cursor = pygame.mouse.get_cursor()
+    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_WAIT)
+    possible_computer_turns = computer_logic.basic_strategy.find_best_moves(game_logic.board, current_player_id,
+                                                                            opponent_player_id)
     best_computer_turn = computer_logic.basic_strategy.choose_one_best_move(possible_computer_turns)
-    sleep(1) # give illusion of thinking
+    sleep(1)  # give illusion of thinking
     hovered_cell = best_computer_turn["x"], best_computer_turn["y"]
     refresh_screen()
     sleep(1)
@@ -136,8 +138,7 @@ def computer_turn(current_player_id: int, opponent_player_id: int):
         pass
     hovered_cell = (-1, -1)
     refresh_screen()
-
-
+    pygame.mouse.set_cursor(current_cursor)
 
 
 def refresh_screen():

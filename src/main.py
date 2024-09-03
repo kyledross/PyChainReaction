@@ -126,9 +126,10 @@ def computer_turn(current_player_id: int, opponent_player_id: int):
     global hovered_cell
     possible_computer_turns = computer_logic.basic_strategy.find_best_moves(game_logic.board, current_player_id, opponent_player_id)
     best_computer_turn = computer_logic.basic_strategy.choose_one_best_move(possible_computer_turns)
+    sleep(1) # give illusion of thinking
     hovered_cell = best_computer_turn["x"], best_computer_turn["y"]
     refresh_screen()
-    sleep(2)
+    sleep(1)
     game_logic.place_piece(best_computer_turn["x"], best_computer_turn["y"], current_player_id)
     while game_logic.process_board():
         # todo: implement animation here

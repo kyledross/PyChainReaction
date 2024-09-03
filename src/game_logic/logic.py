@@ -250,32 +250,40 @@ class Logic:
         self.get_position_to_the_right(row_index, col_index)['player_id'] = self.board[row_index][col_index][
             'player_id']
         # move pieces
-        self.move_piece_up(col_index, row_index)
-        self.move_piece_down(col_index, row_index)
-        self.move_piece_left(col_index, row_index)
-        self.move_piece_right(col_index, row_index)
-        # deduct pieces from source cell
-        self.board[row_index][col_index]['num_pieces'] -= 4
+        self.move_piece_up(row_index, col_index)
+        self.move_piece_down(row_index, col_index)
+        self.move_piece_left(row_index, col_index)
+        self.move_piece_right(row_index, col_index)
+        return True
+
+    def move_piece_right(self, row_index, col_index):
+        self.get_position_to_the_right(row_index, col_index)['num_pieces'] += 1
+        self.board[row_index][col_index]['num_pieces'] -= 1
+        self.unassign_empty_cell(col_index, row_index)
+        self.add_move_to_board_change_list(row_index, col_index, row_index, col_index + 1)
+
+    def move_piece_left(self, row_index, col_index):
+        self.get_position_to_the_left(row_index, col_index)['num_pieces'] += 1
+        self.board[row_index][col_index]['num_pieces'] -= 1
+        self.unassign_empty_cell(col_index, row_index)
+        self.add_move_to_board_change_list(row_index, col_index, row_index, col_index - 1)
+
+    def move_piece_up(self, row_index, col_index):
+        self.get_position_above(row_index, col_index)['num_pieces'] += 1
+        self.board[row_index][col_index]['num_pieces'] -= 1
+        self.unassign_empty_cell(col_index, row_index)
+        self.add_move_to_board_change_list(row_index, col_index, row_index - 1, col_index)
+
+    def move_piece_down(self, row_index, col_index):
+        self.get_position_below(row_index, col_index)['num_pieces'] += 1
+        self.board[row_index][col_index]['num_pieces'] -= 1
+        self.unassign_empty_cell(col_index, row_index)
+        self.add_move_to_board_change_list(row_index, col_index, row_index + 1, col_index)
+
+    def unassign_empty_cell(self, col_index, row_index):
         if self.board[row_index][col_index]['num_pieces'] == 0:
             # unassign cell
             self.board[row_index][col_index]['player_id'] = 0
-        return True
-
-    def move_piece_right(self, col_index, row_index):
-        self.get_position_to_the_right(row_index, col_index)['num_pieces'] += 1
-        self.add_move_to_board_change_list(row_index, col_index,row_index, col_index + 1)
-
-    def move_piece_left(self, col_index, row_index):
-        self.get_position_to_the_left(row_index, col_index)['num_pieces'] += 1
-        self.add_move_to_board_change_list(row_index, col_index,row_index, col_index - 1)
-
-    def move_piece_up(self, col_index, row_index):
-        self.get_position_above(row_index, col_index)['num_pieces'] += 1
-        self.add_move_to_board_change_list(row_index, col_index,row_index - 1, col_index)
-
-    def move_piece_down(self, col_index, row_index):
-        self.get_position_below(row_index, col_index)['num_pieces'] += 1
-        self.add_move_to_board_change_list(row_index, col_index,row_index + 1, col_index)
 
     def process_right_edge(self, col_index: int, row_index: int) -> bool:
         """
@@ -292,14 +300,9 @@ class Logic:
         self.get_position_below(row_index, col_index)['player_id'] = self.board[row_index][col_index]['player_id']
         self.get_position_to_the_left(row_index, col_index)['player_id'] = self.board[row_index][col_index]['player_id']
         # move pieces
-        self.move_piece_up(col_index, row_index)
-        self.move_piece_down(col_index, row_index)
-        self.move_piece_left(col_index, row_index)
-        # deduct pieces from source cell
-        self.board[row_index][col_index]['num_pieces'] -= 3
-        if self.board[row_index][col_index]['num_pieces'] == 0:
-            # unassign cell
-            self.board[row_index][col_index]['player_id'] = 0
+        self.move_piece_up(row_index, col_index)
+        self.move_piece_down(row_index, col_index)
+        self.move_piece_left(row_index, col_index)
         return True
 
     def process_left_edge(self, col_index: int, row_index: int) -> bool:
@@ -318,14 +321,9 @@ class Logic:
         self.get_position_to_the_right(row_index, col_index)['player_id'] = self.board[row_index][col_index][
             'player_id']
         # move pieces
-        self.move_piece_up(col_index, row_index)
-        self.move_piece_down(col_index, row_index)
-        self.move_piece_right(col_index, row_index)
-        # deduct pieces from source cell
-        self.board[row_index][col_index]['num_pieces'] -= 3
-        if self.board[row_index][col_index]['num_pieces'] == 0:
-            # unassign cell
-            self.board[row_index][col_index]['player_id'] = 0
+        self.move_piece_up(row_index, col_index)
+        self.move_piece_down(row_index, col_index)
+        self.move_piece_right(row_index, col_index)
         return True
 
     def process_bottom_edge(self, col_index: int, row_index: int) -> bool:
@@ -344,14 +342,9 @@ class Logic:
         self.get_position_to_the_right(row_index, col_index)['player_id'] = self.board[row_index][col_index][
             'player_id']
         # move pieces
-        self.move_piece_up(col_index, row_index)
-        self.move_piece_left(col_index, row_index)
-        self.move_piece_right(col_index, row_index)
-        # deduct pieces from source cell
-        self.board[row_index][col_index]['num_pieces'] -= 3
-        if self.board[row_index][col_index]['num_pieces'] == 0:
-            # unassign cell
-            self.board[row_index][col_index]['player_id'] = 0
+        self.move_piece_up(row_index, col_index)
+        self.move_piece_left(row_index, col_index)
+        self.move_piece_right(row_index, col_index)
         return True
 
     def process_top_edge(self, col_index: int, row_index: int) -> bool:
@@ -370,14 +363,9 @@ class Logic:
         self.get_position_to_the_right(row_index, col_index)['player_id'] = self.board[row_index][col_index][
             'player_id']
         # move pieces
-        self.move_piece_down(col_index, row_index)
-        self.move_piece_left(col_index, row_index)
-        self.move_piece_right(col_index, row_index)
-        # deduct pieces from source cell
-        self.board[row_index][col_index]['num_pieces'] -= 3
-        if self.board[row_index][col_index]['num_pieces'] == 0:
-            # unassign cell
-            self.board[row_index][col_index]['player_id'] = 0
+        self.move_piece_down(row_index, col_index)
+        self.move_piece_left(row_index, col_index)
+        self.move_piece_right(row_index, col_index)
         return True
 
     def process_bottom_right_corner(self, col_index: int, row_index: int) -> bool:
@@ -394,13 +382,8 @@ class Logic:
         self.get_position_above(row_index, col_index)['player_id'] = self.board[row_index][col_index]['player_id']
         self.get_position_to_the_left(row_index, col_index)['player_id'] = self.board[row_index][col_index]['player_id']
         # move pieces
-        self.move_piece_up(col_index, row_index)
-        self.move_piece_left(col_index, row_index)
-        # deduct pieces from source cell
-        self.board[row_index][col_index]['num_pieces'] -= 2
-        if self.board[row_index][col_index]['num_pieces'] == 0:
-            # unassign cell
-            self.board[row_index][col_index]['player_id'] = 0
+        self.move_piece_up(row_index, col_index)
+        self.move_piece_left(row_index, col_index)
         return True
 
     def process_bottom_left_corner(self, col_index: int, row_index: int) -> bool:
@@ -418,13 +401,8 @@ class Logic:
         self.get_position_to_the_right(row_index, col_index)['player_id'] = self.board[row_index][col_index][
             'player_id']
         # move pieces
-        self.move_piece_up(col_index, row_index)
-        self.move_piece_right(col_index, row_index)
-        # deduct pieces from source cell
-        self.board[row_index][col_index]['num_pieces'] -= 2
-        if self.board[row_index][col_index]['num_pieces'] == 0:
-            # unassign cell
-            self.board[row_index][col_index]['player_id'] = 0
+        self.move_piece_up(row_index, col_index)
+        self.move_piece_right(row_index, col_index)
         return True
 
     def process_top_right_corner(self, col_index: int, row_index: int) -> bool:
@@ -441,13 +419,8 @@ class Logic:
         self.get_position_below(row_index, col_index)['player_id'] = self.board[row_index][col_index]['player_id']
         self.get_position_to_the_left(row_index, col_index)['player_id'] = self.board[row_index][col_index]['player_id']
         # move pieces
-        self.move_piece_down(col_index, row_index)
-        self.move_piece_left(col_index, row_index)
-        # deduct pieces from source cell
-        self.board[row_index][col_index]['num_pieces'] -= 2
-        if self.board[row_index][col_index]['num_pieces'] == 0:
-            # unassign cell
-            self.board[row_index][col_index]['player_id'] = 0
+        self.move_piece_down(row_index, col_index)
+        self.move_piece_left(row_index, col_index)
         return True
 
     def process_top_left_corner(self, col_index: int, row_index: int) -> bool:
@@ -465,11 +438,6 @@ class Logic:
         self.get_position_to_the_right(row_index, col_index)['player_id'] = self.board[row_index][col_index][
             'player_id']
         # move pieces
-        self.move_piece_down(col_index, row_index)
-        self.move_piece_right(col_index, row_index)
-        # deduct pieces from source cell
-        self.board[row_index][col_index]['num_pieces'] -= 2
-        if self.board[row_index][col_index]['num_pieces'] == 0:
-            # unassign cell
-            self.board[row_index][col_index]['player_id'] = 0
+        self.move_piece_down(row_index, col_index)
+        self.move_piece_right(row_index, col_index)
         return True

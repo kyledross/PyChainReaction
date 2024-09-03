@@ -10,7 +10,7 @@ class TestBasicStrategyDecisionMaking(unittest.TestCase):
             [{'player_id': 0, 'num_pieces': 0}, {'player_id': 0, 'num_pieces': 0}, {'player_id': 0, 'num_pieces': 0}],
             [{'player_id': 0, 'num_pieces': 0}, {'player_id': 0, 'num_pieces': 0}, {'player_id': 0, 'num_pieces': 0}]
         ]
-        result = basic_strategy.find_best_moves(board, 2)
+        result = basic_strategy.find_best_moves(board, 2, 1)
         best_move = basic_strategy.choose_one_best_move(result)
         self.assertEqual(best_move["x"], 0)
         self.assertEqual(best_move["y"], 1)
@@ -21,7 +21,7 @@ class TestBasicStrategyDecisionMaking(unittest.TestCase):
             [{'player_id': 0, 'num_pieces': 0}, {'player_id': 0, 'num_pieces': 0}, {'player_id': 0, 'num_pieces': 0}],
             [{'player_id': 0, 'num_pieces': 0}, {'player_id': 0, 'num_pieces': 0}, {'player_id': 1, 'num_pieces': 1}]
         ]
-        result = basic_strategy.find_best_moves(board, 2)
+        result = basic_strategy.find_best_moves(board, 2, 1)
         best_move = basic_strategy.choose_one_best_move(result)
         self.assertEqual(best_move["x"], 0)
         self.assertEqual(best_move["y"], 1)
@@ -32,8 +32,8 @@ class TestBasicStrategyDecisionMaking(unittest.TestCase):
             [{'player_id': 0, 'num_pieces': 0}, {'player_id': 0, 'num_pieces': 0}, {'player_id': 0, 'num_pieces': 0}],
             [{'player_id': 1, 'num_pieces': 1}, {'player_id': 2, 'num_pieces': 2}, {'player_id': 2, 'num_pieces': 1}]
         ]
-        result = basic_strategy.find_best_moves(board, 2)
-        self.assertIn({'x': 2, 'y': 2, 'score': 5}, result)
+        result = basic_strategy.find_best_moves(board, 2, 1)
+        self.assertIn({'x': 2, 'y': 2, 'score': 6}, result)
         best_move = basic_strategy.choose_one_best_move(result)
         self.assertIn((best_move["x"], best_move["y"]), [(2, 2)])
 
@@ -47,7 +47,7 @@ class TestBasicStrategyDecisionMaking(unittest.TestCase):
             [{'player_id': 2, 'num_pieces': 2}, {'player_id': 2, 'num_pieces': 2}, {'player_id': 1, 'num_pieces': 2}],
             [{'player_id': 0, 'num_pieces': 0}, {'player_id': 2, 'num_pieces': 2}, {'player_id': 1, 'num_pieces': 1}]
         ]
-        best_moves = basic_strategy.find_best_moves(board, 2)
+        best_moves = basic_strategy.find_best_moves(board, 2, 1)
         for move in best_moves:
             x, y = move['x'], move['y']
             self.assertNotEqual(board[y][x]['player_id'], 2)

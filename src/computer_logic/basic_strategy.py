@@ -4,13 +4,14 @@ import copy
 from game_logic.logic import Logic
 
 
-def find_best_moves(board: list[list[dict[str, int]]], player_id: int) -> list[dict[str, int]]:
+def find_best_moves(board: list[list[dict[str, int]]], current_player_id: int, opponent_player_id: int) -> list[dict[str, int]]:
     """
     This routine will iteratively attempt to place a piece on each cell of a board, and then
     process the board for each move to see how effective the move was.  It scores each attempted move,
     and then returns a list of the best moves.
     :param board: the game board
-    :param player_id: the id of the player making the move
+    :param current_player_id: the id of the player making the move
+    :param opponent_player_id: the id of the opponent player
     :return: List of x,y, and score of the best moves
     """
     board_width = len(board[0])
@@ -21,10 +22,14 @@ def find_best_moves(board: list[list[dict[str, int]]], player_id: int) -> list[d
     for x in range(board_height):
         for y in range(board_width):
             logic_instance = Logic(copy.deepcopy(board))
-            if logic_instance.place_piece(x, y, player_id):
+            if logic_instance.place_piece(x, y, current_player_id):
                 while logic_instance.process_board():
                     pass
-                score: int = score_game_board(logic_instance.board, player_id)
+                score: int = score_game_board(logic_instance.board, current_player_id)
+                opponent_before_score: int = score_game_board(board, opponent_player_id)
+                opponent_after_score: int = score_game_board(logic_instance.board, opponent_player_id)
+                score += opponent_before_score - opponent_after_score
+
                 scored_moves.append({"x": x, "y": y, "score": score})
             else:
                 scored_moves.append({"x": x, "y": y, "score": 0})  # this move isn't allowed
@@ -63,3 +68,4 @@ def score_game_board(board: list[list[dict[str, int]]], player_id: int) -> int:
             if cell.get("player_id") == player_id:
                 count += 1
     return count
+

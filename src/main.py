@@ -1,6 +1,9 @@
+from time import sleep
+
 import pygame
 import sys
 
+import computer_logic.basic_strategy
 from game_logic import logic
 
 # Constants
@@ -69,7 +72,25 @@ def draw_piece(row, col, num_pieces, color, hollow=False):
 def main():
     global hovered_cell
     global current_player
+    opponent_player = 2 if current_player == 1 else 1
+    while True:
+        match current_player:
+            case 1:
+                human_turn(current_player)
+            case 2:
+                computer_turn(current_player, opponent_player)
+        game_over = game_logic.winner_id()
+        if game_over:
+            display_winner(game_over)
+            break
+        current_player = 1 if current_player == 2 else 2  # Toggle player
+        hovered_cell = (-1, -1)  # Reset hovered cell after a move
 
+
+
+
+def human_turn(current_player_id):
+    global hovered_cell
     while True:
         event = pygame.event.wait()
         if event.type == pygame.QUIT:
@@ -78,7 +99,7 @@ def main():
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             if hovered_cell != (-1, -1):
                 row, col = hovered_cell
-                if not game_logic.place_piece(row, col, current_player):
+                if not game_logic.place_piece(row, col, current_player_id):
                     # todo: add invalid move sound feedback here
                     pass
                 else:
@@ -86,25 +107,36 @@ def main():
                     while game_logic.process_board():
                         # todo: implement animation here
                         pass
-                    game_over = game_logic.winner_id()
-                    if game_over:
-                        display_winner(game_over)
-                    current_player = 1 if current_player == 2 else 2  # Toggle player
-                    hovered_cell = (-1, -1)  # Reset hovered cell after a move
-
+                    hovered_cell = (-1, -1)
+                    refresh_screen()
+                    break
         elif event.type == pygame.MOUSEMOTION:
             mouse_x, mouse_y = event.pos
             new_row = mouse_y // CELL_SIZE
             new_col = mouse_x // CELL_SIZE
-
             if 0 <= new_row < ROWS and 0 <= new_col < COLS:
                 hovered_cell = (new_row, new_col)
             else:
                 hovered_cell = (-1, -1)
         elif event.type == pygame.WINDOWLEAVE:
             hovered_cell = (-1, -1)
-
         refresh_screen()
+
+def computer_turn(current_player_id: int, opponent_player_id: int):
+    global hovered_cell
+    possible_computer_turns = computer_logic.basic_strategy.find_best_moves(game_logic.board, current_player_id, opponent_player_id)
+    best_computer_turn = computer_logic.basic_strategy.choose_one_best_move(possible_computer_turns)
+    hovered_cell = best_computer_turn["x"], best_computer_turn["y"]
+    refresh_screen()
+    sleep(2)
+    game_logic.place_piece(best_computer_turn["x"], best_computer_turn["y"], current_player_id)
+    while game_logic.process_board():
+        # todo: implement animation here
+        pass
+    hovered_cell = (-1, -1)
+    refresh_screen()
+
+
 
 
 def refresh_screen():

@@ -123,7 +123,6 @@ def human_turn(current_player_id):
 
 def computer_turn(current_player_id: int, opponent_player_id: int):
     global hovered_cell
-    current_cursor = pygame.mouse.get_cursor()
     pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_WAIT)
     possible_computer_turns = computer_logic.basic_strategy.find_best_moves(game_logic.board, current_player_id,
                                                                             opponent_player_id)
@@ -138,7 +137,7 @@ def computer_turn(current_player_id: int, opponent_player_id: int):
         pass
     hovered_cell = (-1, -1)
     refresh_screen()
-    pygame.mouse.set_cursor(current_cursor)
+    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 
 
 def refresh_screen():

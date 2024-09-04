@@ -20,7 +20,8 @@ Refactorings and optimizations can come later after the game logic and behavior 
 ### Credits
 
 All credit for the design of this game goes to Mark Tuttle, Tim Midkiff, and Compute!
-magazine. This effort is only an attempt to recreate the game in Python so that it can continue to be enjoyed in new ways.
+magazine.
+This effort is only an attempt to recreate the gameplay in Python so that it can continue to be enjoyed in new ways.
 
 ### Sources For Original Program
 These are the online sources where I found the original program. They are viable links as of August 2024.

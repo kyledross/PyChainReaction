@@ -72,7 +72,7 @@ def draw_piece(row, col, num_pieces, color, hollow=False):
 def main():
     global hovered_cell
     global current_player
-    opponent_player = 2 if current_player == 1 else 1
+    opponent_player = 1
     while True:
         match current_player:
             case 1:
@@ -160,7 +160,7 @@ def display_winner(winner):
     text_rect.move_ip(3, 3)
     screen.blit(text, text_rect)
     pygame.display.flip()
-    pygame.time.wait(5000)
+    sleep(5)
     pygame.quit()
     sys.exit()
 

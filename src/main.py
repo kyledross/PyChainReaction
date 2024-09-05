@@ -142,10 +142,10 @@ def computer_turn(current_player_id: int, opponent_player_id: int):
     possible_computer_turns = computer_logic.basic_strategy.find_best_moves(game_logic.board, current_player_id,
                                                                             opponent_player_id)
     best_computer_turn = computer_logic.basic_strategy.choose_one_best_move(possible_computer_turns)
-    pygame.time.wait(500)
+    pygame.time.wait(500) # give the illusion of thinking
     hovered_cell = best_computer_turn["x"], best_computer_turn["y"]
-    refresh_screen()
-    pygame.time.wait(500)
+    refresh_screen() # redraw with the "hovered" cell where the computer will "click"
+    pygame.time.wait(500) # give the human a chance to see where the computer is going to "click"
     game_logic.place_piece(best_computer_turn["x"], best_computer_turn["y"], current_player_id)
     while game_logic.process_board():
         # todo: implement animation here

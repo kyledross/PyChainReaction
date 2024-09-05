@@ -94,7 +94,6 @@ def human_turn(current_player_id):
     global hovered_cell
     pygame.event.clear()
 
-
     mouse_pos = pygame.mouse.get_pos()
     process_mouse_position(mouse_pos)
     refresh_screen()
@@ -159,7 +158,7 @@ def computer_turn(current_player_id: int, opponent_player_id: int):
 
 
 def refresh_screen():
-    screen.fill((255, 255, 255))
+    screen.fill((169, 169, 169))
     draw_grid()
     draw_pieces()
     pygame.display.flip()

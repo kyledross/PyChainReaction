@@ -1,5 +1,3 @@
-from time import sleep
-
 import pygame
 import sys
 
@@ -18,6 +16,7 @@ PLAYER_COLORS = {1: (0, 255, 0), 2: (255, 0, 0)}
 
 # Initialize PyGame
 pygame.init()
+pygame_clock = pygame.time.Clock()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Chain Reaction')
 font = pygame.font.Font(None, 36)
@@ -27,6 +26,10 @@ board = logic.create_board(ROWS, COLS)
 game_logic = logic.Logic(board)
 hovered_cell = (-1, -1)
 current_player = 1
+
+
+def throttle():
+    pygame_clock.tick(120)
 
 
 def draw_grid():
@@ -89,7 +92,10 @@ def main():
 
 def human_turn(current_player_id):
     global hovered_cell
+    pygame.event.clear()
+    refresh_screen()
     while True:
+        throttle()
         event = pygame.event.wait()
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -127,10 +133,10 @@ def computer_turn(current_player_id: int, opponent_player_id: int):
     possible_computer_turns = computer_logic.basic_strategy.find_best_moves(game_logic.board, current_player_id,
                                                                             opponent_player_id)
     best_computer_turn = computer_logic.basic_strategy.choose_one_best_move(possible_computer_turns)
-    sleep(.5)  # give illusion of thinking
+    pygame.time.wait(500)
     hovered_cell = best_computer_turn["x"], best_computer_turn["y"]
     refresh_screen()
-    sleep(.5)
+    pygame.time.wait(500)
     game_logic.place_piece(best_computer_turn["x"], best_computer_turn["y"], current_player_id)
     while game_logic.process_board():
         # todo: implement animation here
@@ -160,7 +166,7 @@ def display_winner(winner):
     text_rect.move_ip(3, 3)
     screen.blit(text, text_rect)
     pygame.display.flip()
-    sleep(5)
+    pygame.time.wait(5000)
     pygame.quit()
     sys.exit()
 

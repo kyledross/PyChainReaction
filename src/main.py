@@ -7,8 +7,6 @@ from game_logic import logic
 # Constants
 ROWS = 5
 COLS = 6
-CELL_COLOR = (255, 255, 255)
-HOVER_COLOR = (0, 0, 0)
 CELL_SIZE = 100
 WIDTH = CELL_SIZE * COLS
 HEIGHT = CELL_SIZE * ROWS

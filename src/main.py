@@ -93,6 +93,10 @@ def main():
 def human_turn(current_player_id):
     global hovered_cell
     pygame.event.clear()
+
+
+    mouse_pos = pygame.mouse.get_pos()
+    process_mouse_position(mouse_pos)
     refresh_screen()
     while True:
         throttle()
@@ -115,16 +119,24 @@ def human_turn(current_player_id):
                     refresh_screen()
                     break
         elif event.type == pygame.MOUSEMOTION:
-            mouse_x, mouse_y = event.pos
-            new_row = mouse_y // CELL_SIZE
-            new_col = mouse_x // CELL_SIZE
-            if 0 <= new_row < ROWS and 0 <= new_col < COLS:
-                hovered_cell = (new_row, new_col)
-            else:
-                hovered_cell = (-1, -1)
+            process_mouse_position(event.pos)
         elif event.type == pygame.WINDOWLEAVE:
             hovered_cell = (-1, -1)
         refresh_screen()
+
+
+def process_mouse_position(position):
+    global hovered_cell
+    mouse_x, mouse_y = position
+    if mouse_x == 0 and mouse_y == 0:
+        hovered_cell = (-1, -1)
+        return
+    new_row = mouse_y // CELL_SIZE
+    new_col = mouse_x // CELL_SIZE
+    if 0 <= new_row < ROWS and 0 <= new_col < COLS:
+        hovered_cell = (new_row, new_col)
+    else:
+        hovered_cell = (-1, -1)
 
 
 def computer_turn(current_player_id: int, opponent_player_id: int):

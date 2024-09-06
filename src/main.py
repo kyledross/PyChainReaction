@@ -1,5 +1,5 @@
-import pygame
 import sys
+import time
 
 import pygame
 
@@ -183,7 +183,7 @@ def display_winner(winner):
     text_rect.move_ip(3, 3)
     screen.blit(text, text_rect)
     pygame.display.flip()
-    time.sleep(4000)
+    time.sleep(4)
     pygame.quit()
     sys.exit()
 

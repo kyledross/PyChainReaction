@@ -13,6 +13,8 @@ CELL_SIZE = 100
 WIDTH = CELL_SIZE * COLS
 HEIGHT = CELL_SIZE * ROWS
 PLAYER_COLORS = {1: (0, 255, 0), 2: (255, 0, 0)}
+HUMAN_PLAYER_ID = 1
+COMPUTER_PLAYER_ID = 2
 
 # Initialize PyGame
 pygame.init()
@@ -25,7 +27,7 @@ font = pygame.font.Font(None, 36)
 board = logic.create_board(ROWS, COLS)
 game_logic = logic.Logic(board)
 hovered_cell = (-1, -1)
-current_player = 1
+current_player = HUMAN_PLAYER_ID
 
 
 def throttle():
@@ -70,24 +72,6 @@ def draw_piece(row, col, num_pieces, color, hollow=False):
             pygame.draw.circle(screen, color, (int(center_x), int(center_y)), radius, 2)
         else:
             pygame.draw.circle(screen, color, (int(center_x), int(center_y)), radius)
-
-
-def main():
-    global hovered_cell
-    global current_player
-    opponent_player = 1
-    while True:
-        match current_player:
-            case 1:
-                human_turn(current_player)
-            case 2:
-                computer_turn(current_player, opponent_player)
-        game_over = game_logic.winner_id()
-        if game_over:
-            display_winner(game_over)
-            break
-        current_player = 1 if current_player == 2 else 2  # Toggle player
-        hovered_cell = (-1, -1)  # Reset hovered cell after a move
 
 
 def human_turn(current_player_id):
@@ -145,8 +129,8 @@ def computer_turn(current_player_id: int, opponent_player_id: int):
     best_computer_turn = computer_logic.basic_strategy.choose_one_best_move(possible_computer_turns)
     wait_for_a_bit(500)
     hovered_cell = best_computer_turn["x"], best_computer_turn["y"]
-    refresh_screen() # redraw with the "hovered" cell where the computer will "click"
-    wait_for_a_bit(500) # give the human a chance to see where the computer is going to "click"
+    refresh_screen()  # redraw with the "hovered" cell where the computer will "click"
+    wait_for_a_bit(500)  # give the human a chance to see where the computer is going to "click"
     game_logic.place_piece(best_computer_turn["x"], best_computer_turn["y"], current_player_id)
     while game_logic.process_board():
         # todo: implement animation here
@@ -186,6 +170,26 @@ def display_winner(winner):
     time.sleep(4)
     pygame.quit()
     sys.exit()
+
+
+def main():
+    global hovered_cell
+    global current_player
+    global HUMAN_PLAYER_ID
+    global COMPUTER_PLAYER_ID
+
+    while True:
+        match current_player:
+            case 1:
+                human_turn(HUMAN_PLAYER_ID)
+            case 2:
+                computer_turn(COMPUTER_PLAYER_ID, HUMAN_PLAYER_ID)
+        game_over = game_logic.winner_id()
+        if game_over:
+            display_winner(game_over)
+            break
+        current_player = 1 if current_player == 2 else 2  # Toggle player
+        hovered_cell = (-1, -1)  # Reset hovered cell after a move
 
 
 if __name__ == "__main__":

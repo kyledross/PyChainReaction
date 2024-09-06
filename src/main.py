@@ -1,6 +1,8 @@
 import pygame
 import sys
 
+import pygame
+
 import computer_logic.basic_strategy
 from game_logic import logic
 
@@ -96,7 +98,6 @@ def human_turn(current_player_id):
     process_mouse_position(mouse_pos)
     refresh_screen()
     while True:
-        throttle()
         event = pygame.event.wait()
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -142,10 +143,10 @@ def computer_turn(current_player_id: int, opponent_player_id: int):
     possible_computer_turns = computer_logic.basic_strategy.find_best_moves(game_logic.board, current_player_id,
                                                                             opponent_player_id)
     best_computer_turn = computer_logic.basic_strategy.choose_one_best_move(possible_computer_turns)
-    pygame.time.wait(500) # give the illusion of thinking
+    wait_for_a_bit(500)
     hovered_cell = best_computer_turn["x"], best_computer_turn["y"]
     refresh_screen() # redraw with the "hovered" cell where the computer will "click"
-    pygame.time.wait(500) # give the human a chance to see where the computer is going to "click"
+    wait_for_a_bit(500) # give the human a chance to see where the computer is going to "click"
     game_logic.place_piece(best_computer_turn["x"], best_computer_turn["y"], current_player_id)
     while game_logic.process_board():
         # todo: implement animation here
@@ -160,6 +161,13 @@ def refresh_screen():
     draw_grid()
     draw_pieces()
     pygame.display.flip()
+    throttle()
+
+
+def wait_for_a_bit(milliseconds):
+    end_time = pygame.time.get_ticks() + milliseconds
+    while pygame.time.get_ticks() < end_time:
+        refresh_screen()
 
 
 def display_winner(winner):
@@ -175,7 +183,7 @@ def display_winner(winner):
     text_rect.move_ip(3, 3)
     screen.blit(text, text_rect)
     pygame.display.flip()
-    pygame.time.wait(5000)
+    time.sleep(4000)
     pygame.quit()
     sys.exit()
 

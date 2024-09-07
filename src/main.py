@@ -33,6 +33,24 @@ current_player = HUMAN_PLAYER_ID
 def throttle():
     pygame_clock.tick(120)
 
+def animate_piece_from_cell_to_cell(cell_from_row, cell_from_col, cell_to_row, cell_to_col):
+
+
+    start_x = cell_from_col * CELL_SIZE + CELL_SIZE // 2
+    start_y = cell_from_row * CELL_SIZE + CELL_SIZE // 2
+    end_x = cell_to_col * CELL_SIZE + CELL_SIZE // 2
+    end_y = cell_to_row * CELL_SIZE + CELL_SIZE // 2
+
+    num_frames = 30
+    for frame in range(num_frames):
+        interpolate_x = start_x + (end_x - start_x) * frame / num_frames
+        interpolate_y = start_y + (end_y - start_y) * frame / num_frames
+
+        refresh_screen()
+        pygame.draw.circle(screen, PLAYER_COLORS[current_player], (int(interpolate_x), int(interpolate_y)), CELL_SIZE // 6)
+        pygame.display.flip()
+        throttle()
+
 
 def draw_grid():
     for row in range(ROWS):
@@ -95,9 +113,13 @@ def human_turn(current_player_id):
                 else:
 
                     while game_logic.process_board():
-                        # todo: implement animation here
-                        pass
-                    hovered_cell = (-1, -1)
+                        for board_change in game_logic.board_change_list:
+                            from_row = board_change["from"]["row"]
+                            from_col = board_change["from"]["col"]
+                            to_row = board_change["to"]["row"]
+                            to_col = board_change["to"]["col"]
+                            animate_piece_from_cell_to_cell(from_row, from_col, to_row, to_col)
+                        hovered_cell = (-1, -1)
                     refresh_screen()
                     break
         elif event.type == pygame.MOUSEMOTION:

@@ -65,13 +65,11 @@ def draw_pieces():
     for row in range(ROWS):
         for col in range(COLS):
             num_pieces, player = board[row][col]["num_pieces"], board[row][col]["player_id"]
-            if num_pieces == 0:
-                continue  # Skip drawing if no pieces are present
             if (row, col) == hovered_cell and player == current_player:
                 draw_piece(row, col, num_pieces + 1, PLAYER_COLORS[player], hollow=True)
             elif (row, col) == hovered_cell and player == 0:
                 draw_piece(row, col, num_pieces + 1, PLAYER_COLORS[current_player], hollow=True)
-            elif player != 0:
+            elif player != 0 and num_pieces > 0:
                 draw_piece(row, col, num_pieces, PLAYER_COLORS[player])
 
 
@@ -116,7 +114,7 @@ def human_turn(current_player_id):
                     # todo: add invalid move sound feedback here
                     pass
                 else:
-
+                    hovered_cell = (-1, -1)
                     board = deepcopy(game_logic.board)
                     while game_logic.process_board():
                         for board_change in game_logic.board_change_list:
@@ -124,12 +122,10 @@ def human_turn(current_player_id):
                             from_col = board_change["from"]["col"]
                             to_row = board_change["to"]["row"]
                             to_col = board_change["to"]["col"]
+                            board[from_row][from_col]["num_pieces"] -= 1
                             animate_piece_from_cell_to_cell(from_row, from_col, to_row, to_col)
                             board[to_row][to_col]["num_pieces"] += 1
                             board[to_row][to_col]["player_id"] = current_player_id
-                            board[from_row][from_col]["num_pieces"] -= 1
-
-                        hovered_cell = (-1, -1)
                     board = game_logic.board
                     refresh_screen()
                     break

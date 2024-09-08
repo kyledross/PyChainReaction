@@ -114,19 +114,7 @@ def human_turn(current_player_id):
                     # todo: add invalid move sound feedback here
                     pass
                 else:
-                    hovered_cell = (-1, -1)
-                    board = deepcopy(game_logic.board)
-                    while game_logic.process_board():
-                        for board_change in game_logic.board_change_list:
-                            from_row = board_change["from"]["row"]
-                            from_col = board_change["from"]["col"]
-                            to_row = board_change["to"]["row"]
-                            to_col = board_change["to"]["col"]
-                            board[from_row][from_col]["num_pieces"] -= 1
-                            animate_piece_from_cell_to_cell(from_row, from_col, to_row, to_col)
-                            board[to_row][to_col]["num_pieces"] += 1
-                            board[to_row][to_col]["player_id"] = current_player_id
-                    board = game_logic.board
+                    perform_player_animation(current_player_id)
                     refresh_screen()
                     break
         elif event.type == pygame.MOUSEMOTION:
@@ -134,6 +122,23 @@ def human_turn(current_player_id):
         elif event.type == pygame.WINDOWLEAVE:
             hovered_cell = (-1, -1)
         refresh_screen()
+
+
+def perform_player_animation(current_player_id):
+    global hovered_cell, board
+    hovered_cell = (-1, -1)
+    board = deepcopy(game_logic.board)
+    while game_logic.process_board():
+        for board_change in game_logic.board_change_list:
+            from_row = board_change["from"]["row"]
+            from_col = board_change["from"]["col"]
+            to_row = board_change["to"]["row"]
+            to_col = board_change["to"]["col"]
+            board[from_row][from_col]["num_pieces"] -= 1
+            animate_piece_from_cell_to_cell(from_row, from_col, to_row, to_col)
+            board[to_row][to_col]["num_pieces"] += 1
+            board[to_row][to_col]["player_id"] = current_player_id
+    board = game_logic.board
 
 
 def process_mouse_position(position):
@@ -161,9 +166,7 @@ def computer_turn(current_player_id: int, opponent_player_id: int):
     refresh_screen()  # redraw with the "hovered" cell where the computer will "click"
     wait_for_a_bit(500)  # give the human a chance to see where the computer is going to "click"
     game_logic.place_piece(best_computer_turn["x"], best_computer_turn["y"], current_player_id)
-    while game_logic.process_board():
-        # todo: implement animation here
-        pass
+    perform_player_animation(current_player_id)
     hovered_cell = (-1, -1)
     refresh_screen()
     pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)

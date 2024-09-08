@@ -125,7 +125,6 @@ def human_turn(current_player_id):
 
 
 def perform_player_animation(current_player_id):
-    # todo: bug: don't stop the game early until all pieces have been animation
     global hovered_cell, board
     hovered_cell = (-1, -1)
     board = deepcopy(game_logic.board)
@@ -146,6 +145,8 @@ def perform_player_animation(current_player_id):
             board[to_row][to_col]["num_pieces"] += 1
             board[to_row][to_col]["player_id"] = current_player_id
             refresh_screen()
+        if game_logic.winner_id() != 0:
+            break
     board = game_logic.board
 
 

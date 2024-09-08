@@ -185,9 +185,6 @@ class Logic:
                 if self.send_debug_to_console:
                     print("After:")
                     self.print_board()
-        # if there is a winner, no more processing is needed
-        if self.winner_id() != 0:
-            return False
         return board_changed
 
     def print_board(self) -> None:

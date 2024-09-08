@@ -1,5 +1,6 @@
 import sys
 import time
+from copy import deepcopy
 
 import pygame
 
@@ -33,9 +34,8 @@ current_player = HUMAN_PLAYER_ID
 def throttle():
     pygame_clock.tick(120)
 
+
 def animate_piece_from_cell_to_cell(cell_from_row, cell_from_col, cell_to_row, cell_to_col):
-
-
     start_x = cell_from_col * CELL_SIZE + CELL_SIZE // 2
     start_y = cell_from_row * CELL_SIZE + CELL_SIZE // 2
     end_x = cell_to_col * CELL_SIZE + CELL_SIZE // 2
@@ -43,11 +43,13 @@ def animate_piece_from_cell_to_cell(cell_from_row, cell_from_col, cell_to_row, c
 
     num_frames = 30
     for frame in range(num_frames):
+        pygame.event.pump()
         interpolate_x = start_x + (end_x - start_x) * frame / num_frames
         interpolate_y = start_y + (end_y - start_y) * frame / num_frames
 
         refresh_screen()
-        pygame.draw.circle(screen, PLAYER_COLORS[current_player], (int(interpolate_x), int(interpolate_y)), CELL_SIZE // 6)
+        pygame.draw.circle(screen, PLAYER_COLORS[current_player], (int(interpolate_x), int(interpolate_y)),
+                           CELL_SIZE // 6)
         pygame.display.flip()
         throttle()
 
@@ -63,6 +65,8 @@ def draw_pieces():
     for row in range(ROWS):
         for col in range(COLS):
             num_pieces, player = board[row][col]["num_pieces"], board[row][col]["player_id"]
+            if num_pieces == 0:
+                continue  # Skip drawing if no pieces are present
             if (row, col) == hovered_cell and player == current_player:
                 draw_piece(row, col, num_pieces + 1, PLAYER_COLORS[player], hollow=True)
             elif (row, col) == hovered_cell and player == 0:
@@ -81,7 +85,7 @@ def draw_piece(row, col, num_pieces, color, hollow=False):
     radius = CELL_SIZE // 6  # Radius for the circles
 
     num_pieces = min(num_pieces, 4)  # Max out at 4 to avoid index error
-    draw_positions = positions[num_pieces]
+    draw_positions = positions.get(num_pieces, [])  # Handle the case when num_pieces might be 0
 
     for pos in draw_positions:
         center_x = col * CELL_SIZE + pos[0] * CELL_SIZE
@@ -94,6 +98,7 @@ def draw_piece(row, col, num_pieces, color, hollow=False):
 
 def human_turn(current_player_id):
     global hovered_cell
+    global board
     pygame.event.clear()
 
     mouse_pos = pygame.mouse.get_pos()
@@ -112,6 +117,7 @@ def human_turn(current_player_id):
                     pass
                 else:
 
+                    board = deepcopy(game_logic.board)
                     while game_logic.process_board():
                         for board_change in game_logic.board_change_list:
                             from_row = board_change["from"]["row"]
@@ -119,7 +125,12 @@ def human_turn(current_player_id):
                             to_row = board_change["to"]["row"]
                             to_col = board_change["to"]["col"]
                             animate_piece_from_cell_to_cell(from_row, from_col, to_row, to_col)
+                            board[to_row][to_col]["num_pieces"] += 1
+                            board[to_row][to_col]["player_id"] = current_player_id
+                            board[from_row][from_col]["num_pieces"] -= 1
+
                         hovered_cell = (-1, -1)
+                    board = game_logic.board
                     refresh_screen()
                     break
         elif event.type == pygame.MOUSEMOTION:

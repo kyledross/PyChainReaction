@@ -6,6 +6,7 @@ import pygame
 
 import computer_logic.basic_strategy
 from game_logic import logic
+from game_logic.logic import determine_winner
 
 # Constants
 ROWS = 5
@@ -145,13 +146,12 @@ def perform_player_animation(current_player_id):
             board[to_row][to_col]["num_pieces"] += 1
             board[to_row][to_col]["player_id"] = current_player_id
             refresh_screen()
-            # todo: pass this working board into the game logic to test for a winner
-            # in this manner, we're not testing the move winner status (which might be true),
-            # instead we're testing the state of the board as we're moving things around
-            # this way, after a winning chain reaction, we can stop... but not before then
-        if game_logic.winner_id() != 0:
+            if determine_winner(board) != 0:
+                break
+        if determine_winner(board) != 0:
             break
-    board = game_logic.board
+    if determine_winner(board) == 0:
+        board = game_logic.board
 
 
 def process_mouse_position(position):

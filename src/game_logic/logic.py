@@ -7,6 +7,28 @@ def validate_player_id(player_id: int):
         raise ValueError(f"Player id {player_id} is not valid.")
 
 
+def determine_winner(board):
+    occupied_count: int = 0
+    player_1_count: int = 0
+    player_2_count: int = 0
+    for row in board:
+        for cell in row:
+            if cell['player_id'] != 0:
+                occupied_count += 1
+                if cell['player_id'] == 1:
+                    player_1_count += 1
+                if cell['player_id'] == 2:
+                    player_2_count += 1
+    winner = occupied_count > 1 and (occupied_count == player_1_count or occupied_count == player_2_count)
+    if winner and player_1_count != 0:
+        winner = 1
+    elif winner and player_2_count != 0:
+        winner = 2
+    else:
+        winner = 0
+    return winner
+
+
 class Logic:
     """
     Logic class handles the state and operations on a game board consisting of pieces placed by players.
@@ -15,7 +37,9 @@ class Logic:
     """
 
     def __init__(self, board: list[list[dict[str, int]]]):
-        self.board = board
+        self.board = board # todo: since the board pretty much has to be held outside this instance,
+        # look into removing this and having the board passed in everywhere
+
         self.send_debug_to_console: bool = False
         self.board_change_list = []
 
@@ -208,27 +232,10 @@ class Logic:
         Checks to see if every occupied position is owned by one player
         :return: Winning player id, 0 if there is no winner.
         """
-        occupied_count: int = 0
-        player_1_count: int = 0
-        player_2_count: int = 0
 
-        for row in self.board:
-            for cell in row:
-                if cell['player_id'] != 0:
-                    occupied_count += 1
-                    if cell['player_id'] == 1:
-                        player_1_count += 1
-                    if cell['player_id'] == 2:
-                        player_2_count += 1
-        winner = occupied_count > 1 and (occupied_count == player_1_count or occupied_count == player_2_count)
-        if winner and self.send_debug_to_console:
-            print("Winner determined.")
-        if winner and player_1_count != 0:
-            return 1
-        elif winner and player_2_count != 0:
-            return 2
-        else:
-            return 0
+        board = self.board
+        winner = determine_winner(board)
+        return winner
 
     def process_inner_position(self, col_index: int, row_index: int) -> bool:
         """

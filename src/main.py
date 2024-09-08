@@ -41,7 +41,7 @@ def animate_piece_from_cell_to_cell(cell_from_row, cell_from_col, cell_to_row, c
     end_x = cell_to_col * CELL_SIZE + CELL_SIZE // 2
     end_y = cell_to_row * CELL_SIZE + CELL_SIZE // 2
 
-    num_frames = 30
+    num_frames = 20
     for frame in range(num_frames):
         pygame.event.pump()
         interpolate_x = start_x + (end_x - start_x) * frame / num_frames
@@ -125,19 +125,27 @@ def human_turn(current_player_id):
 
 
 def perform_player_animation(current_player_id):
+    # todo: bug: don't stop the game early until all pieces have been animation
     global hovered_cell, board
     hovered_cell = (-1, -1)
     board = deepcopy(game_logic.board)
     while game_logic.process_board():
+        last_row = -1
+        last_col = -1
         for board_change in game_logic.board_change_list:
             from_row = board_change["from"]["row"]
             from_col = board_change["from"]["col"]
+            if from_row != last_row or from_col != last_col:
+                wait_for_a_bit(250)
+            last_row = from_row
+            last_col = from_col
             to_row = board_change["to"]["row"]
             to_col = board_change["to"]["col"]
             board[from_row][from_col]["num_pieces"] -= 1
             animate_piece_from_cell_to_cell(from_row, from_col, to_row, to_col)
             board[to_row][to_col]["num_pieces"] += 1
             board[to_row][to_col]["player_id"] = current_player_id
+            refresh_screen()
     board = game_logic.board
 
 

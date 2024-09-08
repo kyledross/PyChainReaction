@@ -66,6 +66,8 @@ class TestGamePlay(unittest.TestCase):
         game.place_piece(2, 2, 2)
 
         while game.process_board():
+            if game.winner_id() != 0:
+                break
             pass
         winner_id = game.winner_id()
         self.assertEqual(winner_id, 0)
@@ -74,6 +76,8 @@ class TestGamePlay(unittest.TestCase):
         # causing a cascade that takes over the board and wins
         game.place_piece(0, 0, 1)
         while game.process_board():
+            if game.winner_id() != 0:
+                break
             pass
         winner_id = game.winner_id()
         self.assertEqual(winner_id, 1)
@@ -106,15 +110,18 @@ class TestGamePlay(unittest.TestCase):
 
         game.place_piece(0, 0, 1)
         while game.process_board():
-            pass
+            if game.winner_id() != 0:
+                break
 
         game.place_piece(0, 1, 2)
         while game.process_board():
-            pass
+            if game.winner_id() != 0:
+                break
 
         game.place_piece(0, 0, 1)
         while game.process_board():
-            pass
+            if game.winner_id() != 0:
+                break
         winner_id = game.winner_id()
         self.assertEqual(winner_id, 1)
         self.assertEqual(len(game.board_change_list), 2)

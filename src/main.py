@@ -9,9 +9,7 @@ import computer_logic.basic_strategy
 from game_logic import logic
 from game_logic.logic import determine_winner
 
-# todo: save and load game when exiting/starting
-
-# Constants
+BACKGROUND_COLOR = (180, 180, 180)
 ROWS = 5
 COLS = 6
 CELL_SIZE = 100
@@ -20,6 +18,9 @@ HEIGHT = CELL_SIZE * ROWS
 PLAYER_COLORS = {1: (0, 255, 0), 2: (255, 0, 0)}
 HUMAN_PLAYER_ID = 1
 COMPUTER_PLAYER_ID = 2
+
+# todo: save and load game when exiting/starting
+
 
 # Initialize PyGame
 pygame.init()
@@ -104,7 +105,7 @@ def jiggle_cell(row: int, col: int, num_pieces:int, color, hollow=False):
     for _ in range(10):
         offset_row = random.randint(-2, 2)
         offset_col = random.randint(-2, 2)
-        screen.fill((169, 169, 169))
+        screen.fill(BACKGROUND_COLOR)
         draw_grid()
         draw_pieces(
             except_row=row,
@@ -207,7 +208,7 @@ def computer_turn(current_player_id: int, opponent_player_id: int):
 
 
 def refresh_screen():
-    screen.fill((169, 169, 169))
+    screen.fill(BACKGROUND_COLOR)
     draw_grid()
     draw_pieces()
     pygame.display.flip()

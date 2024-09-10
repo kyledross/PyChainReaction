@@ -9,6 +9,8 @@ import computer_logic.basic_strategy
 from game_logic import logic
 from game_logic.logic import determine_winner
 
+# todo: save and load game when exiting/starting
+
 # Constants
 ROWS = 5
 COLS = 6
@@ -98,24 +100,17 @@ def draw_pieces_in_cell(row, col, num_pieces, color, hollow=False, row_offset_pi
             pygame.draw.circle(screen, color, (int(center_x) + row_offset_pixels, int(center_y) + col_offset_pixels), radius)
 
 def jiggle_cell(row: int, col: int, num_pieces:int, color, hollow=False):
-    offsets = {
-        0: [0, 0],
-        1: [-2, -2],
-        2: [-2, 2],
-        3: [2, 2],
-        4: [2, -2]
-    }
-
     # Jiggle the cell 5 times with random offsets
     for _ in range(10):
-        offset_key = random.randint(0, 4)
+        offset_row = random.randint(-2, 2)
+        offset_col = random.randint(-2, 2)
         screen.fill((169, 169, 169))
         draw_grid()
         draw_pieces(
             except_row=row,
             except_col=col)
         draw_pieces_in_cell(row, col, num_pieces, color, hollow,
-                                row_offset_pixels=offsets[offset_key][0], col_offset_pixels=offsets[offset_key][1])
+                                row_offset_pixels=offset_row, col_offset_pixels=offset_col)
         pygame.display.flip()
         throttle()
         pygame.time.delay(50)

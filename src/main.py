@@ -1,5 +1,6 @@
 import sys
 import time
+import random
 from copy import deepcopy
 
 import pygame
@@ -62,19 +63,21 @@ def draw_grid():
             pygame.draw.rect(screen, (0, 0, 0), rect, 1)
 
 
-def draw_pieces():
+def draw_pieces(except_row: int = -1, except_col: int = -1):
     for row in range(ROWS):
         for col in range(COLS):
+            if row == except_row and col == except_col:
+                continue
             num_pieces, player = board[row][col]["num_pieces"], board[row][col]["player_id"]
             if (row, col) == hovered_cell and player == current_player:
-                draw_piece(row, col, num_pieces + 1, PLAYER_COLORS[player], hollow=True)
+                draw_pieces_in_cell(row, col, num_pieces + 1, PLAYER_COLORS[player], hollow=True)
             elif (row, col) == hovered_cell and player == 0:
-                draw_piece(row, col, num_pieces + 1, PLAYER_COLORS[current_player], hollow=True)
+                draw_pieces_in_cell(row, col, num_pieces + 1, PLAYER_COLORS[current_player], hollow=True)
             elif player != 0 and num_pieces > 0:
-                draw_piece(row, col, num_pieces, PLAYER_COLORS[player])
+                draw_pieces_in_cell(row, col, num_pieces, PLAYER_COLORS[player])
 
 
-def draw_piece(row, col, num_pieces, color, hollow=False):
+def draw_pieces_in_cell(row, col, num_pieces, color, hollow=False, row_offset_pixels=0, col_offset_pixels=0):
     positions = {
         1: [(0.5, 0.5)],
         2: [(0.3, 0.5), (0.7, 0.5)],
@@ -90,10 +93,33 @@ def draw_piece(row, col, num_pieces, color, hollow=False):
         center_x = col * CELL_SIZE + pos[0] * CELL_SIZE
         center_y = row * CELL_SIZE + pos[1] * CELL_SIZE
         if hollow:
-            pygame.draw.circle(screen, color, (int(center_x), int(center_y)), radius, 2)
+            pygame.draw.circle(screen, color, (int(center_x) + row_offset_pixels, int(center_y) + col_offset_pixels), radius, 2)
         else:
-            pygame.draw.circle(screen, color, (int(center_x), int(center_y)), radius)
+            pygame.draw.circle(screen, color, (int(center_x) + row_offset_pixels, int(center_y) + col_offset_pixels), radius)
 
+def jiggle_cell(row: int, col: int, num_pieces:int, color, hollow=False):
+    offsets = {
+        0: [0, 0],
+        1: [-2, -2],
+        2: [-2, 2],
+        3: [2, 2],
+        4: [2, -2]
+    }
+
+    # Jiggle the cell 5 times with random offsets
+    for _ in range(10):
+        offset_key = random.randint(0, 4)
+        screen.fill((169, 169, 169))
+        draw_grid()
+        draw_pieces(
+            except_row=row,
+            except_col=col)
+        draw_pieces_in_cell(row, col, num_pieces, color, hollow,
+                                row_offset_pixels=offsets[offset_key][0], col_offset_pixels=offsets[offset_key][1])
+        pygame.display.flip()
+        throttle()
+        pygame.time.delay(50)
+    refresh_screen()
 
 def human_turn(current_player_id):
     global hovered_cell
@@ -136,7 +162,7 @@ def perform_player_animation(current_player_id):
             from_row = board_change["from"]["row"]
             from_col = board_change["from"]["col"]
             if from_row != last_row or from_col != last_col:
-                wait_for_a_bit(250)
+                jiggle_cell(from_row, from_col, board[from_row][from_col]["num_pieces"], PLAYER_COLORS[current_player_id])
             last_row = from_row
             last_col = from_col
             to_row = board_change["to"]["row"]

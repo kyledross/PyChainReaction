@@ -1,13 +1,28 @@
 def create_board(height: int, width: int) -> list[list[dict[str, int]]]:
+    """
+    Creates an empty game board for use during gameplay.
+    :param height: The number of rows in the board
+    :param width: The number of columns in the board
+    :return: A 2D list representing the game board where each cell is a dictionary with 'player_id' and 'num_pieces' keys
+    """
     return [[{'player_id': 0, 'num_pieces': 0} for _ in range(width)] for _ in range(height)]
 
 
 def validate_player_id(player_id: int):
+    """
+    Checks that the player_id is valid
+    :param player_id: An integer representing the player's ID. Valid player IDs are 1 and 2.
+    :raises ValueError: If the player ID is not 1 or 2.
+    """
     if player_id != 1 and player_id != 2:
         raise ValueError(f"Player id {player_id} is not valid.")
 
 
 def determine_winner(board):
+    """
+    :param board: A 2D list representing the game board. Each element is a dictionary with a 'player_id' key, where a value of '0' indicates an empty cell, '1' indicates a cell occupied by player 1, and '2' indicates a cell occupied by player 2.
+    :return: Returns the player number (1 or 2) if a winner is determined. Returns 0 if there is no winner.
+    """
     occupied_count: int = 0
     player_1_count: int = 0
     player_2_count: int = 0
@@ -261,30 +276,60 @@ class Logic:
         return True
 
     def move_piece_right(self, row_index, col_index):
+        """
+        Moves a player piece to the right from the specified cell.
+        :param row_index: The row index of the piece to be moved.
+        :param col_index: The column index of the piece to be moved.
+        :return: None
+        """
         self.get_position_to_the_right(row_index, col_index)['num_pieces'] += 1
         self.board[row_index][col_index]['num_pieces'] -= 1
         self.unassign_empty_cell(col_index, row_index)
         self.add_move_to_board_change_list(row_index, col_index, row_index, col_index + 1)
 
     def move_piece_left(self, row_index, col_index):
+        """
+        Moves a player piece to the left from the specified cell.
+        :param row_index: The row index of the piece that is to be moved.
+        :param col_index: The column index of the piece that is to be moved.
+        :return: None
+        """
         self.get_position_to_the_left(row_index, col_index)['num_pieces'] += 1
         self.board[row_index][col_index]['num_pieces'] -= 1
         self.unassign_empty_cell(col_index, row_index)
         self.add_move_to_board_change_list(row_index, col_index, row_index, col_index - 1)
 
     def move_piece_up(self, row_index, col_index):
+        """
+        Moves a player piece up from the specified cell.
+        :param row_index: The row index of the piece that is to be moved.
+        :param col_index: The column index of the piece that is to be moved.
+        :return: None
+        """
         self.get_position_above(row_index, col_index)['num_pieces'] += 1
         self.board[row_index][col_index]['num_pieces'] -= 1
         self.unassign_empty_cell(col_index, row_index)
         self.add_move_to_board_change_list(row_index, col_index, row_index - 1, col_index)
 
     def move_piece_down(self, row_index, col_index):
+        """
+        Moves a player piece down from the specified cell.
+        :param row_index: The row index of the piece that is to be moved.
+        :param col_index: The column index of the piece that is to be moved.
+        :return: None
+        """
         self.get_position_below(row_index, col_index)['num_pieces'] += 1
         self.board[row_index][col_index]['num_pieces'] -= 1
         self.unassign_empty_cell(col_index, row_index)
         self.add_move_to_board_change_list(row_index, col_index, row_index + 1, col_index)
 
     def unassign_empty_cell(self, col_index, row_index):
+        """
+        Removes a player id from an unoccupied cell.
+        :param col_index: The column index of the cell to be unassigned
+        :param row_index: The row index of the cell to be unassigned
+        :return: None
+        """
         if self.board[row_index][col_index]['num_pieces'] == 0:
             # unassign cell
             self.board[row_index][col_index]['player_id'] = 0

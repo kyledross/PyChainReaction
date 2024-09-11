@@ -38,10 +38,23 @@ current_player = HUMAN_PLAYER_ID
 
 
 def throttle():
+    """
+    Imposes a framerate throttle to regulate the game's frames per second (FPS).
+
+    :return: None
+    """
     pygame_clock.tick(120)
 
 
-def animate_piece_from_cell_to_cell(cell_from_row, cell_from_col, cell_to_row, cell_to_col):
+def animate_piece_from_cell_to_cell(cell_from_row: int, cell_from_col: int, cell_to_row: int, cell_to_col: int) -> None:
+    """
+    Displays the animation of a player piece from one cell to another.
+    :param cell_from_row: The row index of the starting cell.
+    :param cell_from_col: The column index of the starting cell.
+    :param cell_to_row: The row index of the destination cell.
+    :param cell_to_col: The column index of the destination cell.
+    :return: None
+    """
     start_x = cell_from_col * CELL_SIZE + CELL_SIZE // 2
     start_y = cell_from_row * CELL_SIZE + CELL_SIZE // 2
     end_x = cell_to_col * CELL_SIZE + CELL_SIZE // 2
@@ -83,6 +96,11 @@ def animate_piece_from_cell_to_cell(cell_from_row, cell_from_col, cell_to_row, c
 
 
 def draw_grid():
+    """
+    Draws a grid on the screen based on the number of rows and columns defined.
+
+    :return: None
+    """
     for row in range(ROWS):
         for col in range(COLS):
             rect = pygame.Rect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE)
@@ -90,6 +108,14 @@ def draw_grid():
 
 
 def draw_pieces(except_row: int = -1, except_col: int = -1):
+    """
+    Draws the player pieces for all of the cells.
+    If except_row and except_col are specified, the pieces are not drawn for that cell.
+    This is in support of drawing them separately in the jiggle routine.
+    :param except_row: The row index of the cell to be excluded from drawing.
+    :param except_col: The column index of the cell to be excluded from drawing.
+    :return: None
+    """
     for row in range(ROWS):
         for col in range(COLS):
             if row == except_row and col == except_col:
@@ -103,7 +129,19 @@ def draw_pieces(except_row: int = -1, except_col: int = -1):
                 draw_pieces_in_cell(row, col, num_pieces, PLAYER_COLORS[player])
 
 
-def draw_pieces_in_cell(row, col, num_pieces, color, hollow=False, row_offset_pixels=0, col_offset_pixels=0):
+def draw_pieces_in_cell(row: int, col: int, num_pieces: int, color: tuple[int, int, int], hollow: bool = False,
+                        row_offset_pixels: int = 0, col_offset_pixels: int = 0) -> None:
+    """
+    Draws the player pieces for the given cell. An optional offset can be specified, in support of the jiggle effect.
+    :param row: The row index where the pieces will be drawn.
+    :param col: The column index where the pieces will be drawn.
+    :param num_pieces: The number of pieces to draw in the cell.
+    :param color: The RGB color tuple for the pieces.
+    :param hollow: Flag to determine if the circles should be hollow or filled.
+    :param row_offset_pixels: Optional pixel offset for the row position.
+    :param col_offset_pixels: Optional pixel offset for the column position.
+    :return: None
+    """
     positions = {
         1: [(0.5, 0.5)],
         2: [(0.3, 0.5), (0.7, 0.5)],
@@ -126,8 +164,16 @@ def draw_pieces_in_cell(row, col, num_pieces, color, hollow=False, row_offset_pi
                                radius)
 
 
-def jiggle_cell(row: int, col: int, num_pieces: int, color, hollow=False):
-    # Jiggle the cell 5 times with random offsets
+def jiggle_cell(row: int, col: int, num_pieces: int, color: tuple[int, int, int], hollow: bool = False) -> None:
+    """
+    Draws and jiggles the player pieces for the given cell.
+    :param row: The row index of the cell to jiggle.
+    :param col: The column index of the cell to jiggle.
+    :param num_pieces: The number of pieces to draw in the cell.
+    :param color: The color of the pieces, represented as an (R, G, B) tuple.
+    :param hollow: A boolean flag indicating if the pieces should be hollow.
+    :return: None
+    """
     for _ in range(10):
         offset_row = random.randint(-2, 2)
         offset_col = random.randint(-2, 2)
@@ -144,7 +190,12 @@ def jiggle_cell(row: int, col: int, num_pieces: int, color, hollow=False):
     refresh_screen()
 
 
-def human_turn(current_player_id):
+def human_turn(current_player_id: int):
+    """
+    Allows a human to play a turn for the specified player id.
+    :param current_player_id: ID of the current player making a move
+    :return: None
+    """
     global hovered_cell
     global board
     pygame.event.clear()
@@ -174,7 +225,12 @@ def human_turn(current_player_id):
         refresh_screen()
 
 
-def perform_player_animation(current_player_id):
+def perform_player_animation(current_player_id: int):
+    """
+    Performs animation for the played piece for the specified player.
+    :param current_player_id: The ID of the player for whom the animation is being performed.
+    :return: None
+    """
     global hovered_cell, board
     hovered_cell = (-1, -1)
     board = deepcopy(game_logic.board)
@@ -204,7 +260,12 @@ def perform_player_animation(current_player_id):
         board = game_logic.board
 
 
-def process_mouse_position(position):
+def process_mouse_position(position: tuple[int, int]):
+    """
+    Processes the mouse position, in support of drawing the hovered cell preview.
+    :param position: A tuple containing the x and y coordinates of the mouse position on the screen.
+    :return: None
+    """
     global hovered_cell
     mouse_x, mouse_y = position
     if mouse_x == 0 and mouse_y == 0:
@@ -219,6 +280,12 @@ def process_mouse_position(position):
 
 
 def computer_turn(current_player_id: int, opponent_player_id: int):
+    """
+    Causes the turn of the specified player to be automatically played by computer logic.
+    :param current_player_id: The ID of the current player, representing the computer making a move.
+    :param opponent_player_id: The ID of the opponent player.
+    :return: None, this function does not return any value.
+    """
     global hovered_cell
     pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_WAIT)
     possible_computer_turns = computer_logic.basic_strategy.find_best_moves(game_logic.board, current_player_id,
@@ -236,6 +303,11 @@ def computer_turn(current_player_id: int, opponent_player_id: int):
 
 
 def refresh_screen():
+    """
+    Refreshes the game screen by filling the background, drawing the grid and pieces, and updating the display. It also throttles the refresh rate to prevent excessive CPU usage.
+
+    :return: None
+    """
     screen.fill(BACKGROUND_COLOR)
     draw_grid()
     draw_pieces()
@@ -243,13 +315,23 @@ def refresh_screen():
     throttle()
 
 
-def wait_for_a_bit(milliseconds):
+def wait_for_a_bit(milliseconds: int):
+    """
+    Causes a delay in the game without freezing the game or animated mouse cursor.
+    :param milliseconds: The amount of time, in milliseconds, to wait.
+    :return: None
+    """
     end_time = pygame.time.get_ticks() + milliseconds
     while pygame.time.get_ticks() < end_time:
         refresh_screen()
 
 
-def display_winner(winner):
+def display_winner(winner: int):
+    """
+    Shows the winning player number and exits the game after a short delay.
+    :param winner: The player number who has won the game, typically 1 or 2.
+    :return: None
+    """
     global hovered_cell
     hovered_cell = (-1, -1)
     refresh_screen()
@@ -268,6 +350,11 @@ def display_winner(winner):
 
 
 def main():
+    """
+    Handles the main game loop, alternating turns between human and computer players until there's a winner.
+
+    :return: None
+    """
     global hovered_cell
     global current_player
     global HUMAN_PLAYER_ID

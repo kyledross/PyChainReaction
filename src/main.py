@@ -3,6 +3,7 @@ import time
 import random
 from copy import deepcopy
 
+import numpy as np
 import pygame
 
 import computer_logic.basic_strategy
@@ -47,6 +48,11 @@ def animate_piece_from_cell_to_cell(cell_from_row, cell_from_col, cell_to_row, c
     end_y = cell_to_row * CELL_SIZE + CELL_SIZE // 2
 
     num_frames = 20
+    start_frequency = 650
+    end_frequency = 250
+
+    pygame.mixer.init()
+
     for frame in range(num_frames):
         pygame.event.pump()
         interpolate_x = start_x + (end_x - start_x) * frame / num_frames
@@ -57,6 +63,23 @@ def animate_piece_from_cell_to_cell(cell_from_row, cell_from_col, cell_to_row, c
                            CELL_SIZE // 6)
         pygame.display.flip()
         throttle()
+
+        frequency = start_frequency + (end_frequency - start_frequency) * frame / num_frames
+
+        # Create a pure tone sound at the given frequency
+        sample_rate = 44100
+        duration = 0.1
+        t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
+        wave = 0.5 * np.sin(2 * np.pi * frequency * t)
+
+        # Ensure wave is 2-dimensional for stereo (duplicating the channel)
+        stereo_wave = np.vstack((wave, wave)).T
+
+        # Ensure the array is C-contiguous
+        sound = pygame.sndarray.make_sound((32767 * stereo_wave).astype(np.int16).copy())
+        sound.play()
+
+    pygame.mixer.stop()
 
 
 def draw_grid():
@@ -96,11 +119,14 @@ def draw_pieces_in_cell(row, col, num_pieces, color, hollow=False, row_offset_pi
         center_x = col * CELL_SIZE + pos[0] * CELL_SIZE
         center_y = row * CELL_SIZE + pos[1] * CELL_SIZE
         if hollow:
-            pygame.draw.circle(screen, color, (int(center_x) + row_offset_pixels, int(center_y) + col_offset_pixels), radius, 2)
+            pygame.draw.circle(screen, color, (int(center_x) + row_offset_pixels, int(center_y) + col_offset_pixels),
+                               radius, 2)
         else:
-            pygame.draw.circle(screen, color, (int(center_x) + row_offset_pixels, int(center_y) + col_offset_pixels), radius)
+            pygame.draw.circle(screen, color, (int(center_x) + row_offset_pixels, int(center_y) + col_offset_pixels),
+                               radius)
 
-def jiggle_cell(row: int, col: int, num_pieces:int, color, hollow=False):
+
+def jiggle_cell(row: int, col: int, num_pieces: int, color, hollow=False):
     # Jiggle the cell 5 times with random offsets
     for _ in range(10):
         offset_row = random.randint(-2, 2)
@@ -111,11 +137,12 @@ def jiggle_cell(row: int, col: int, num_pieces:int, color, hollow=False):
             except_row=row,
             except_col=col)
         draw_pieces_in_cell(row, col, num_pieces, color, hollow,
-                                row_offset_pixels=offset_row, col_offset_pixels=offset_col)
+                            row_offset_pixels=offset_row, col_offset_pixels=offset_col)
         pygame.display.flip()
         throttle()
         pygame.time.delay(50)
     refresh_screen()
+
 
 def human_turn(current_player_id):
     global hovered_cell
@@ -158,7 +185,8 @@ def perform_player_animation(current_player_id):
             from_row = board_change["from"]["row"]
             from_col = board_change["from"]["col"]
             if from_row != last_row or from_col != last_col:
-                jiggle_cell(from_row, from_col, board[from_row][from_col]["num_pieces"], PLAYER_COLORS[current_player_id])
+                jiggle_cell(from_row, from_col, board[from_row][from_col]["num_pieces"],
+                            PLAYER_COLORS[current_player_id])
             last_row = from_row
             last_col = from_col
             to_row = board_change["to"]["row"]

@@ -10,13 +10,13 @@ import computer_logic.basic_strategy
 from game_logic import logic
 from game_logic.logic import determine_winner
 
-BACKGROUND_COLOR = (180, 180, 180)
+BACKGROUND_COLOR = (180, 180, 180)  # Light grey color
 ROWS = 5
 COLS = 6
 CELL_SIZE = 100
 WIDTH = CELL_SIZE * COLS
 HEIGHT = CELL_SIZE * ROWS
-PLAYER_COLORS = {1: (0, 255, 0), 2: (255, 0, 0)}
+PLAYER_COLORS = {1: (0, 255, 0), 2: (255, 0, 0)}  # Player 1: Green, Player 2: Red
 HUMAN_PLAYER_ID = 1
 COMPUTER_PLAYER_ID = 2
 
@@ -85,13 +85,17 @@ def animate_piece_from_cell_to_cell(cell_from_row: int, cell_from_col: int, cell
 
 
 def play_sound(frequency, sound_duration):
-    # Create a pure tone sound at the given frequency
+    """
+    This function generates and plays a sound of a specified frequency and duration.
+
+    :param frequency: The frequency of the sound in Hertz (Hz).
+    :param sound_duration: The duration of the sound in seconds.
+    :return: None
+    """
     sample_rate = 44100
     t = np.linspace(0, sound_duration, int(sample_rate * sound_duration), endpoint=False)
     wave = 0.5 * np.sin(2 * np.pi * frequency * t)
-    # Ensure wave is 2-dimensional for stereo (duplicating the channel)
     stereo_wave = np.vstack((wave, wave)).T
-    # Ensure the array is C-contiguous
     sound = pygame.sndarray.make_sound((32767 * stereo_wave).astype(np.int16).copy())
     sound.play()
 

@@ -25,6 +25,7 @@ COMPUTER_PLAYER_ID = 2
 
 # Initialize PyGame
 pygame.init()
+pygame.mixer.init()
 pygame_clock = pygame.time.Clock()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Chain Reaction')
@@ -63,8 +64,7 @@ def animate_piece_from_cell_to_cell(cell_from_row: int, cell_from_col: int, cell
     num_frames = 20
     start_frequency = 650
     end_frequency = 250
-
-    pygame.mixer.init()
+    sound_duration = 0.1
 
     for frame in range(num_frames):
         pygame.event.pump()
@@ -79,20 +79,21 @@ def animate_piece_from_cell_to_cell(cell_from_row: int, cell_from_col: int, cell
 
         frequency = start_frequency + (end_frequency - start_frequency) * frame / num_frames
 
-        # Create a pure tone sound at the given frequency
-        sample_rate = 44100
-        duration = 0.1
-        t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
-        wave = 0.5 * np.sin(2 * np.pi * frequency * t)
-
-        # Ensure wave is 2-dimensional for stereo (duplicating the channel)
-        stereo_wave = np.vstack((wave, wave)).T
-
-        # Ensure the array is C-contiguous
-        sound = pygame.sndarray.make_sound((32767 * stereo_wave).astype(np.int16).copy())
-        sound.play()
+        play_sound(frequency, sound_duration)
 
     pygame.mixer.stop()
+
+
+def play_sound(frequency, sound_duration):
+    # Create a pure tone sound at the given frequency
+    sample_rate = 44100
+    t = np.linspace(0, sound_duration, int(sample_rate * sound_duration), endpoint=False)
+    wave = 0.5 * np.sin(2 * np.pi * frequency * t)
+    # Ensure wave is 2-dimensional for stereo (duplicating the channel)
+    stereo_wave = np.vstack((wave, wave)).T
+    # Ensure the array is C-contiguous
+    sound = pygame.sndarray.make_sound((32767 * stereo_wave).astype(np.int16).copy())
+    sound.play()
 
 
 def draw_grid():
@@ -186,6 +187,7 @@ def jiggle_cell(row: int, col: int, num_pieces: int, color: tuple[int, int, int]
                             row_offset_pixels=offset_row, col_offset_pixels=offset_col)
         pygame.display.flip()
         throttle()
+        play_sound(75, .2)
         pygame.time.delay(50)
     refresh_screen()
 

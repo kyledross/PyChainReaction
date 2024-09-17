@@ -47,7 +47,8 @@ def throttle():
     pygame_clock.tick(120)
 
 
-def animate_piece_from_cell_to_cell(cell_from_row: int, cell_from_col: int, cell_to_row: int, cell_to_col: int) -> None:
+def animate_piece_from_cell_to_cell(cell_from_row: int, cell_from_col: int,
+                                    cell_to_row: int, cell_to_col: int) -> None:
     """
     Displays the animation of a player piece from one cell to another.
     :param cell_from_row: The row index of the starting cell.
@@ -72,8 +73,8 @@ def animate_piece_from_cell_to_cell(cell_from_row: int, cell_from_col: int, cell
         interpolate_y = start_y + (end_y - start_y) * frame / num_frames
 
         refresh_screen()
-        pygame.draw.circle(screen, PLAYER_COLORS[current_player], (int(interpolate_x), int(interpolate_y)),
-                           CELL_SIZE // 6)
+        pygame.draw.circle(screen, PLAYER_COLORS[current_player],
+                           (int(interpolate_x), int(interpolate_y)), CELL_SIZE // 6)
         pygame.display.flip()
         throttle()
 
@@ -127,9 +128,11 @@ def draw_pieces(except_row: int = -1, except_col: int = -1):
                 continue
             num_pieces, player = board[row][col]["num_pieces"], board[row][col]["player_id"]
             if (row, col) == hovered_cell and player == current_player:
-                draw_pieces_in_cell(row, col, num_pieces + 1, PLAYER_COLORS[player], hollow=True)
+                draw_pieces_in_cell(row, col, num_pieces + 1,
+                                    PLAYER_COLORS[player], hollow=True)
             elif (row, col) == hovered_cell and player == 0:
-                draw_pieces_in_cell(row, col, num_pieces + 1, PLAYER_COLORS[current_player], hollow=True)
+                draw_pieces_in_cell(row, col, num_pieces + 1,
+                                    PLAYER_COLORS[current_player], hollow=True)
             elif player != 0 and num_pieces > 0:
                 draw_pieces_in_cell(row, col, num_pieces, PLAYER_COLORS[player])
 
@@ -162,11 +165,11 @@ def draw_pieces_in_cell(row: int, col: int, num_pieces: int, color: tuple[int, i
         center_x = col * CELL_SIZE + pos[0] * CELL_SIZE
         center_y = row * CELL_SIZE + pos[1] * CELL_SIZE
         if hollow:
-            pygame.draw.circle(screen, color, (int(center_x) + row_offset_pixels, int(center_y) + col_offset_pixels),
-                               radius, 2)
+            pygame.draw.circle(screen, color, (int(center_x) + row_offset_pixels,
+                                               int(center_y) + col_offset_pixels), radius, 2)
         else:
-            pygame.draw.circle(screen, color, (int(center_x) + row_offset_pixels, int(center_y) + col_offset_pixels),
-                               radius)
+            pygame.draw.circle(screen, color, (int(center_x) + row_offset_pixels,
+                                               int(center_y) + col_offset_pixels), radius)
 
 
 def jiggle_cell(row: int, col: int, num_pieces: int, color: tuple[int, int, int], hollow: bool = False) -> None:
@@ -254,7 +257,8 @@ def perform_player_animation(current_player_id: int):
             to_row = board_change["to"]["row"]
             to_col = board_change["to"]["col"]
             board[from_row][from_col]["num_pieces"] -= 1
-            animate_piece_from_cell_to_cell(from_row, from_col, to_row, to_col)
+            animate_piece_from_cell_to_cell(from_row, from_col,
+                                            to_row, to_col)
             board[to_row][to_col]["num_pieces"] += 1
             board[to_row][to_col]["player_id"] = current_player_id
             refresh_screen()
@@ -294,7 +298,8 @@ def computer_turn(current_player_id: int, opponent_player_id: int):
     """
     global hovered_cell
     pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_WAIT)
-    possible_computer_turns = computer_logic.basic_strategy.find_best_moves(game_logic.board, current_player_id,
+    possible_computer_turns = computer_logic.basic_strategy.find_best_moves(game_logic.board,
+                                                                            current_player_id,
                                                                             opponent_player_id)
     best_computer_turn = computer_logic.basic_strategy.choose_one_best_move(possible_computer_turns)
     wait_for_a_bit(500)
@@ -310,7 +315,8 @@ def computer_turn(current_player_id: int, opponent_player_id: int):
 
 def refresh_screen():
     """
-    Refreshes the game screen by filling the background, drawing the grid and pieces, and updating the display. It also throttles the refresh rate to prevent excessive CPU usage.
+    Refreshes the game screen by filling the background, drawing the grid and pieces, and updating the display.
+    It also throttles the refresh rate to prevent excessive CPU usage.
 
     :return: None
     """
@@ -346,7 +352,7 @@ def display_winner(winner: int):
     text_rect.inflate_ip(6, 6)
     text_rect.move_ip(-3, -3)
     screen.fill((255, 255, 255), text_rect)  # Fill the text area with white
-    pygame.draw.rect(screen, (0, 0, 0), text_rect, 2)  # Draw a black border around the text area
+    pygame.draw.rect(screen, (0, 0, 0), text_rect, 2)
     text_rect.move_ip(3, 3)
     screen.blit(text, text_rect)
     pygame.display.flip()

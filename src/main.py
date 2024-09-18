@@ -75,6 +75,8 @@ def animate_piece_from_cell_to_cell(cell_from_row: int, cell_from_col: int,
         refresh_screen()
         pygame.draw.circle(screen, PLAYER_COLORS[current_player],
                            (int(interpolate_x), int(interpolate_y)), CELL_SIZE // 6)
+        pygame.draw.circle(screen, (0, 0, 0),
+                           (int(interpolate_x), int(interpolate_y)), CELL_SIZE // 6, 1)
         pygame.display.flip()
         throttle()
 
@@ -154,11 +156,12 @@ def draw_pieces_in_cell(row: int, col: int, num_pieces: int, color: tuple[int, i
         1: [(0.5, 0.5)],
         2: [(0.3, 0.5), (0.7, 0.5)],
         3: [(0.5, 0.3), (0.3, 0.7), (0.7, 0.7)],
-        4: [(0.3, 0.3), (0.7, 0.3), (0.3, 0.7), (0.7, 0.7)]
+        4: [(0.3, 0.3), (0.7, 0.3), (0.3, 0.7), (0.7, 0.7)],
+        5: [(0.3, 0.3), (0.7, 0.3), (0.3, 0.7), (0.7, 0.7), (0.5, 0.5)],
     }
     radius = CELL_SIZE // 6  # Radius for the circles
 
-    num_pieces = min(num_pieces, 4)  # Max out at 4 to avoid index error
+    num_pieces = min(num_pieces, 5)  # Max out at 5 to avoid index error
     draw_positions = positions.get(num_pieces, [])  # Handle the case when num_pieces might be 0
 
     for pos in draw_positions:
@@ -167,9 +170,13 @@ def draw_pieces_in_cell(row: int, col: int, num_pieces: int, color: tuple[int, i
         if hollow:
             pygame.draw.circle(screen, color, (int(center_x) + row_offset_pixels,
                                                int(center_y) + col_offset_pixels), radius, 2)
+            pygame.draw.circle(screen, (0, 0, 0), (int(center_x) + row_offset_pixels,
+                                                   int(center_y) + col_offset_pixels), radius, 1)
         else:
             pygame.draw.circle(screen, color, (int(center_x) + row_offset_pixels,
                                                int(center_y) + col_offset_pixels), radius)
+            pygame.draw.circle(screen, (0, 0, 0), (int(center_x) + row_offset_pixels,
+                                                   int(center_y) + col_offset_pixels), radius, 1)
 
 
 def jiggle_cell(row: int, col: int, num_pieces: int, color: tuple[int, int, int], hollow: bool = False) -> None:

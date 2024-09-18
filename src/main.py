@@ -95,6 +95,7 @@ def play_sound(frequency, sound_duration):
     :param sound_duration: The duration of the sound in seconds.
     :return: None
     """
+    #todo: this is probably not the best way of doing this
     sample_rate = 44100
     t = np.linspace(0, sound_duration, int(sample_rate * sound_duration), endpoint=False)
     wave = 0.5 * np.sin(2 * np.pi * frequency * t)

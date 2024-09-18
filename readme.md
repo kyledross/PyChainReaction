@@ -2,14 +2,21 @@
 ## A Python implementation of the Chain Reaction game
 
 ### Introduction
-This game is based off of a favorite game of mine from my youth, Chain Reaction.  Chain Reaction
+This game is based on a favorite game of mine from my youth, Chain Reaction.  Chain Reaction
 was a game that was published in the January 1987 issue of Compute! magazine.  I typed in the IBM PC version and
 played that game over and over. Just recently, I wrote a Python program that would parse and clean up a
 copy-pasted OCR version of the program from a scanned issue of the magazine that I found online. I run that program in a DosBox instance with GW-BASIC as the interpreter.
 
 ### This Implementation
-
 This is a completely original rewrite of the game, using the same basic design and game rules.
+
+### Purpose
+The purpose of this project is:
+1. Allow myself to play a favorite game of my youth in a more modern environment, and
+2. Be another exercise in Python development  
+
+Being just a personal project, it is written in a simple and straightforward manner,
+prioritizing readability over optimization.  Refactorings and optimizations can come later after the game logic and behavior has been written and tested.
 
 ### Running
 Install the prerequisites by running:

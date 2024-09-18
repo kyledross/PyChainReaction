@@ -11,6 +11,13 @@ copy-pasted OCR version of the program from a scanned issue of the magazine that
 
 This is a completely original rewrite of the game, using the same basic design and game rules.
 
+### Running
+Install the prerequisites by running:
+```pip install -r requirements.txt```
+
+Start the game by running:
+```python3 main.py```
+
 ### Code Style
 
 This program, like most others I am writing at the moment, are mostly an exercise for myself.

@@ -2,6 +2,7 @@ import sys
 import time
 import random
 from copy import deepcopy
+import functools
 
 import numpy as np
 import pygame
@@ -65,7 +66,7 @@ def animate_piece_from_cell_to_cell(cell_from_row: int, cell_from_col: int,
     num_frames = 20
     start_frequency = 650
     end_frequency = 250
-    sound_duration = 0.1
+    sound_duration = 0.05
 
     for frame in range(num_frames):
         pygame.event.pump()
@@ -96,12 +97,17 @@ def play_sound(frequency, sound_duration):
     :return: None
     """
     #todo: this is probably not the best way of doing this
+    sound = generate_sound(frequency, sound_duration)
+    sound.play()
+
+@functools.lru_cache(maxsize=50)
+def generate_sound(frequency, sound_duration):
     sample_rate = 44100
     t = np.linspace(0, sound_duration, int(sample_rate * sound_duration), endpoint=False)
     wave = 0.5 * np.sin(2 * np.pi * frequency * t)
     stereo_wave = np.vstack((wave, wave)).T
     sound = pygame.sndarray.make_sound((32767 * stereo_wave).astype(np.int16).copy())
-    sound.play()
+    return sound
 
 
 def draw_grid():

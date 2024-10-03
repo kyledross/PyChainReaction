@@ -361,7 +361,7 @@ def display_winner(winner: int):
     global hovered_cell
     hovered_cell = (-1, -1)
     refresh_screen()
-    text = font.render(f'Player {winner} wins!', True, (0, 0, 0))
+    text = font.render(f'{"You win!" if winner == 1 else "Computer wins!"}', True, (0, 0, 0))
     text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
     text_rect.inflate_ip(6, 6)
     text_rect.move_ip(-3, -3)

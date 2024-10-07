@@ -1,8 +1,7 @@
-import sys
-import time
-import random
-from copy import deepcopy
 import functools
+import random
+import sys
+from copy import deepcopy
 
 import numpy as np
 import pygame
@@ -354,14 +353,14 @@ def wait_for_a_bit(milliseconds: int):
 
 def display_winner(winner: int):
     """
-    Shows the winning player number and exits the game after a short delay.
+    Shows the winning player number and asks if the player wants to play again.
     :param winner: The player number who has won the game, typically 1 or 2.
     :return: None
     """
-    global hovered_cell
+    global hovered_cell, current_player, board, game_logic
     hovered_cell = (-1, -1)
     refresh_screen()
-    text = font.render(f'{"You win!" if winner == 1 else "Computer wins!"}', True, (0, 0, 0))
+    text = font.render(f'{"You win!" if winner == 1 else "Computer wins!"} Play again?', True, (0, 0, 0))
     text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
     text_rect.inflate_ip(6, 6)
     text_rect.move_ip(-3, -3)
@@ -369,10 +368,41 @@ def display_winner(winner: int):
     pygame.draw.rect(screen, (0, 0, 0), text_rect, 2)
     text_rect.move_ip(3, 3)
     screen.blit(text, text_rect)
+
+    # Create Yes/No button
+    yes_text = font.render('Yes', True, (0, 0, 0))
+    no_text = font.render('No', True, (0, 0, 0))
+    yes_rect = yes_text.get_rect(center=(WIDTH // 2 - 50, HEIGHT // 2 + 50))
+    no_rect = no_text.get_rect(center=(WIDTH // 2 + 50, HEIGHT // 2 + 50))
+
+    pygame.draw.rect(screen, (255, 255, 255), yes_rect.inflate(20, 20))
+    pygame.draw.rect(screen, (0, 0, 0), yes_rect.inflate(20, 20), 2)
+    screen.blit(yes_text, yes_rect)
+
+    pygame.draw.rect(screen, (255, 255, 255), no_rect.inflate(20, 20))
+    pygame.draw.rect(screen, (0, 0, 0), no_rect.inflate(20, 20), 2)
+    screen.blit(no_text, no_rect)
+
     pygame.display.flip()
-    time.sleep(4)
-    pygame.quit()
-    sys.exit()
+
+    while True:
+        event = pygame.event.wait()
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            mouse_pos = pygame.mouse.get_pos()
+            if yes_rect.inflate(20, 20).collidepoint(mouse_pos):
+                # Restart the game
+                board = logic.create_board(ROWS, COLS)
+                game_logic = logic.Logic(board)
+                current_player = HUMAN_PLAYER_ID
+                hovered_cell = (-1, -1)
+                refresh_screen()
+                return
+            elif no_rect.inflate(20, 20).collidepoint(mouse_pos):
+                pygame.quit()
+                sys.exit()
 
 
 def main():
@@ -395,9 +425,9 @@ def main():
         game_over = game_logic.winner_id()
         if game_over:
             display_winner(game_over)
-            break
-        current_player = 1 if current_player == 2 else 2  # Toggle player
-        hovered_cell = (-1, -1)  # Reset hovered cell after a move
+        else:
+            current_player = 1 if current_player == 2 else 2  # Toggle player
+            hovered_cell = (-1, -1)  # Reset hovered cell after a move
 
 
 if __name__ == "__main__":

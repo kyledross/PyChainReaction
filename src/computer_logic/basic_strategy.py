@@ -22,16 +22,21 @@ def find_best_moves(board: list[list[dict[str, int]]], current_player_id: int, o
     for x in range(board_height):
         for y in range(board_width):
             logic_instance = Logic(copy.deepcopy(board))
+            current_player_score_before_placing = score_game_board(board, current_player_id)
             if logic_instance.place_piece(x, y, current_player_id):
                 while logic_instance.process_board():
                     if logic_instance.winner_id() != 0:
                         break
-                score: int = score_game_board(logic_instance.board, current_player_id)
+                current_player_score_after_placing: int = score_game_board(logic_instance.board, current_player_id)
                 opponent_before_score: int = score_game_board(board, opponent_player_id)
                 opponent_after_score: int = score_game_board(logic_instance.board, opponent_player_id)
-                score += opponent_before_score - opponent_after_score
+                if current_player_score_after_placing - current_player_score_before_placing == 1:
+                    # this move did nothing more than add a piece
+                    # 1 point penalty in scoring
+                    current_player_score_after_placing -= 1
+                current_player_score_after_placing += opponent_before_score - opponent_after_score
 
-                scored_moves.append({"x": x, "y": y, "score": score})
+                scored_moves.append({"x": x, "y": y, "score": current_player_score_after_placing})
             else:
                 scored_moves.append({"x": x, "y": y, "score": 0})  # this move isn't allowed
 

@@ -3,6 +3,7 @@ import copy
 
 from game_logic.logic import Logic
 
+# todo: create strategy for looking for opponent cells that are full and look at surrounding cells for current_player cells that are also full and rank those cells much higher
 
 def find_best_moves(board: list[list[dict[str, int]]], current_player_id: int, opponent_player_id: int) -> list[dict[str, int]]:
     """

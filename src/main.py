@@ -87,16 +87,17 @@ def animate_piece_from_cell_to_cell(cell_from_row: int, cell_from_col: int,
     pygame.mixer.stop()
 
 
-def play_sound(frequency, sound_duration):
+def play_sound(frequency, sound_duration, volume=.1):
     """
-    This function generates and plays a sound of a specified frequency and duration.
+    This function generates and plays a sound of a specified frequency and duration, with an optional volume level.
 
     :param frequency: The frequency of the sound in Hertz (Hz).
     :param sound_duration: The duration of the sound in seconds.
+    :param volume: The volume of the sound, ranging from 0.0 to 1.0.
     :return: None
     """
-    #todo: this is probably not the best way of doing this
     sound = generate_sound(frequency, sound_duration)
+    sound.set_volume(volume)
     sound.play()
 
 @functools.lru_cache(maxsize=50)

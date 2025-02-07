@@ -124,7 +124,7 @@ def draw_grid():
 
 def draw_pieces(except_row: int = -1, except_col: int = -1):
     """
-    Draws the player pieces for all of the cells.
+    Draws the player pieces for all the cells.
     If except_row and except_col are specified, the pieces are not drawn for that cell.
     This is in support of drawing them separately in the jiggle routine.
     :param except_row: The row index of the cell to be excluded from drawing.

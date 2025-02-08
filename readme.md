@@ -29,7 +29,7 @@ Start the game by running:
 
 This program, like most others I am writing at the moment, are mostly an exercise for myself.
 As such, they tend to be written in a simple and straightforward manner, prioritizing readability over optimization.
-Refactorings and optimizations can come later after the game logic and behavior has been written and tested.
+Refactorings and optimizations can come later after the game logic and behavior have been written and tested.
 
 ### Credits
 

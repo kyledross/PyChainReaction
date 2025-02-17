@@ -7,7 +7,7 @@ import pygame
 import computer_logic.basic_strategy
 from game_logic import logic
 from game_logic.logic import determine_winner
-from sound import play_sweep, play_rumble, play_plop
+from sound import play_sweep, play_rumble, play_plop, play_fanfare, play_lost_game_sound
 
 BACKGROUND_COLOR = (180, 180, 180)  # Light grey color
 ROWS = 5
@@ -368,6 +368,10 @@ def display_winner(winner: int):
     screen.blit(no_text, no_rect)
 
     pygame.display.flip()
+    if winner == 1:
+        play_fanfare()
+    else:
+        play_lost_game_sound()
 
     while True:
         event = pygame.event.wait()

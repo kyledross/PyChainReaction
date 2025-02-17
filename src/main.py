@@ -7,7 +7,7 @@ import pygame
 import computer_logic.basic_strategy
 from game_logic import logic
 from game_logic.logic import determine_winner
-from sound import play_sweep, play_rumble
+from sound import play_sweep, play_rumble, play_plop
 
 BACKGROUND_COLOR = (180, 180, 180)  # Light grey color
 ROWS = 5
@@ -219,6 +219,7 @@ def human_turn(current_player_id: int):
                     # todo: add invalid move sound feedback here
                     pass
                 else:
+                    play_plop(sound_duration=.1, fade_out_duration=.07)
                     perform_player_animation(current_player_id)
                     refresh_screen()
                     break
@@ -302,6 +303,7 @@ def computer_turn(current_player_id: int, opponent_player_id: int):
     refresh_screen()  # redraw with the "hovered" cell where the computer will "click"
     wait_for_a_bit(500)  # give the human a chance to see where the computer is going to "click"
     game_logic.place_piece(best_computer_turn["x"], best_computer_turn["y"], current_player_id)
+    play_plop(start_frequency=450, end_frequency=100)
     perform_player_animation(current_player_id)
     hovered_cell = (-1, -1)
     refresh_screen()

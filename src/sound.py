@@ -94,3 +94,48 @@ def play_rumble(frequency, sound_duration, noise_intensity=0.1, volume=0.1):
     sound = generate_rumble_sound(frequency, sound_duration, noise_intensity)
     sound.set_volume(volume)
     sound.play()
+
+@functools.lru_cache(maxsize=50)
+def generate_plop_sound(start_frequency, end_frequency, sound_duration=0.2, fade_out_duration=0.15):
+    """
+    Generate a 'plop' sound effect that starts at a low frequency and sweeps to a higher frequency.
+
+    :param start_frequency: The starting frequency in Hertz (Hz).
+    :param end_frequency: The ending frequency in Hertz (Hz).
+    :param sound_duration: The total duration of the plop sound, in seconds.
+    :param fade_out_duration: The duration over which the sound fades out (less than or equal to sound_duration).
+    :return: A pygame Sound object of the plop.
+    """
+    sample_rate = 44100
+    t = np.linspace(0, sound_duration, int(sample_rate * sound_duration), endpoint=False)
+
+    # Generate a logarithmic sweep for rising pitch effect (sounds smooth to the ear)
+    frequencies = np.logspace(np.log10(start_frequency), np.log10(end_frequency), len(t))
+    wave = 0.5 * np.sin(2 * np.pi * frequencies * t)
+
+    # Apply amplitude envelope (fade out)
+    fade = np.ones_like(t)
+    fade_out_start = int((sound_duration - fade_out_duration) * sample_rate)
+    fade[fade_out_start:] *= np.linspace(1.0, 0.0, len(t) - fade_out_start)
+    wave *= fade
+
+    # Convert to stereo
+    stereo_wave = np.vstack((wave, wave)).T
+    sound = pygame.sndarray.make_sound((32767 * stereo_wave).astype(np.int16).copy())
+    return sound
+
+
+def play_plop(start_frequency=150.0, end_frequency=400.0, sound_duration=0.15, fade_out_duration=0.10, volume=0.2):
+    """
+    Play a short 'plop' sound effect.
+
+    :param start_frequency: The starting frequency in Hertz (Hz).
+    :param end_frequency: The ending frequency in Hertz (Hz).
+    :param sound_duration: The duration of the plop sound, in seconds.
+    :param fade_out_duration: The duration over which the sound fades out.
+    :param volume: The volume level of the plop sound (0.0 to 1.0).
+    :return: None
+    """
+    sound = generate_plop_sound(start_frequency, end_frequency, sound_duration, fade_out_duration)
+    sound.set_volume(volume)
+    sound.play()

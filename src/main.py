@@ -1,3 +1,4 @@
+import os
 import random
 import sys
 from copy import deepcopy
@@ -24,6 +25,7 @@ COMPUTER_PLAYER_ID = 2
 
 # Initialize PyGame
 pygame.init()
+os.environ['SDL_VIDEODRIVER'] = "x11"
 pygame.mixer.init()
 pygame_clock = pygame.time.Clock()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))

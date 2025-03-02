@@ -1,0 +1,86 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Play Game (Docker)" type="PythonConfigurationType" factoryName="Python">
+    <module name="PyChainReaction" />
+    <option name="ENV_FILES" value="" />
+    <option name="INTERPRETER_OPTIONS" value="" />
+    <option name="PARENT_ENVS" value="true" />
+    <envs>
+      <env name="XDG_RUNTIME_DIR" value="/run/user/1000/" />
+    </envs>
+    <option name="SDK_HOME" value="" />
+    <option name="SDK_NAME" value="Remote Python 3.12.9 Docker (&lt;none&gt;:&lt;none&gt;)" />
+    <option name="WORKING_DIRECTORY" value="$Projectpath$" />
+    <option name="IS_MODULE_SDK" value="false" />
+    <option name="ADD_CONTENT_ROOTS" value="true" />
+    <option name="ADD_SOURCE_ROOTS" value="true" />
+    <EXTENSION ID="DockerContainerSettingsRunConfigurationExtension">
+      <option name="envVars">
+        <list>
+          <DockerEnvVarImpl>
+            <option name="name" value="DISPLAY" />
+            <option name="value" value=":1" />
+          </DockerEnvVarImpl>
+          <DockerEnvVarImpl>
+            <option name="name" value="XDG_RUNTIME_DIR" />
+            <option name="value" value="/run/user/1000/" />
+          </DockerEnvVarImpl>
+          <DockerEnvVarImpl>
+            <option name="name" value="PIPEWIRE_RUNTIME_DIR" />
+            <option name="value" value="/run/user/1000/pipewire-0" />
+          </DockerEnvVarImpl>
+        </list>
+      </option>
+      <option name="extraHosts">
+        <list />
+      </option>
+      <option name="links">
+        <list />
+      </option>
+      <option name="networkDisabled" value="false" />
+      <option name="networkMode" value="bridge" />
+      <option name="portBindings">
+        <list />
+      </option>
+      <option name="publishAllPorts" value="false" />
+      <option name="runCliOptions" value="--entrypoint= --rm --device /dev/snd" />
+      <option name="version" value="2" />
+      <option name="volumeBindings">
+        <list>
+          <DockerVolumeBindingImpl>
+            <option name="containerPath" value="/opt/project" />
+            <option name="editable" value="true" />
+            <option name="hostPath" value="$PROJECT_DIR$" />
+            <option name="readOnly" value="false" />
+          </DockerVolumeBindingImpl>
+          <DockerVolumeBindingImpl>
+            <option name="containerPath" value="/tmp/.X11-unix" />
+            <option name="editable" value="true" />
+            <option name="hostPath" value="/tmp/.X11-unix" />
+            <option name="readOnly" value="false" />
+          </DockerVolumeBindingImpl>
+          <DockerVolumeBindingImpl>
+            <option name="containerPath" value="/run/user/1000/pipewire-0" />
+            <option name="editable" value="true" />
+            <option name="hostPath" value="/run/user/1000/pipewire-0" />
+            <option name="readOnly" value="false" />
+          </DockerVolumeBindingImpl>
+          <DockerVolumeBindingImpl>
+            <option name="containerPath" value="/run/user/1000/" />
+            <option name="editable" value="true" />
+            <option name="hostPath" value="/run/user/1000/" />
+            <option name="readOnly" value="false" />
+          </DockerVolumeBindingImpl>
+        </list>
+      </option>
+    </EXTENSION>
+    <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/main.py" />
+    <option name="PARAMETERS" value="" />
+    <option name="SHOW_COMMAND_LINE" value="false" />
+    <option name="EMULATE_TERMINAL" value="false" />
+    <option name="MODULE_MODE" value="false" />
+    <option name="REDIRECT_INPUT" value="false" />
+    <option name="INPUT_FILE" value="" />
+    <method v="2" />
+  </configuration>
+</component>

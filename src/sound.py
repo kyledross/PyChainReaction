@@ -145,12 +145,6 @@ def generate_plop_sound(start_frequency, end_frequency, sound_duration=0.2, fade
     frequencies = np.logspace(np.log10(start_frequency), np.log10(end_frequency), len(t))
     wave = 0.5 * np.sin(2 * np.pi * frequencies * t)
 
-    # Apply amplitude envelope (fade out)
-    fade = np.ones_like(t)
-    fade_out_start = int((sound_duration - fade_out_duration) * SAMPLE_RATE)
-    fade[fade_out_start:] *= np.linspace(1.0, 0.0, len(t) - fade_out_start)
-    wave *= fade
-
     sound = create_sound_from_waveform(wave)
     return sound
 
@@ -212,12 +206,6 @@ def generate_fanfare_sound(start_frequencies, note_duration=0.2, fade_out_durati
 
         # Add the note (with harmonics) to the full waveform
         waveform[start_idx:end_idx] += note_wave
-
-    # Apply fade-out on the final note
-    fade_out_start = int((total_duration - fade_out_duration) * SAMPLE_RATE)
-    fade = np.ones_like(t)
-    fade[fade_out_start:] = np.linspace(1.0, 0.0, len(t) - fade_out_start)
-    waveform *= fade
 
     sound = create_sound_from_waveform(waveform)
 
@@ -289,12 +277,6 @@ def generate_lost_game_sound(high_frequency, low_frequency, high_note_duration=0
         0.25 * np.sin(2 * np.pi * (low_frequency * interval) * low_t) for interval in harmony_intervals
     )
     waveform[low_start_idx:low_end_idx] += low_root_wave + low_harmonics_wave
-
-    # Apply fade-out at the end of the low note
-    fade_out_start = int((total_duration - fade_out_duration) * SAMPLE_RATE)
-    fade = np.ones_like(t)
-    fade[fade_out_start:] = np.linspace(1.0, 0.0, len(t) - fade_out_start)
-    waveform *= fade
 
     sound = create_sound_from_waveform(waveform)
     return sound

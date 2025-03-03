@@ -10,6 +10,8 @@ from game_logic import logic
 from game_logic.logic import determine_winner
 from sound import play_sweep, play_rumble, play_plop, play_fanfare, play_lost_game_sound
 
+FRAMERATE = 120
+
 BACKGROUND_COLOR = (180, 180, 180)  # Light grey color
 ROWS = 5
 COLS = 6
@@ -26,7 +28,8 @@ COMPUTER_PLAYER_ID = 2
 # Initialize PyGame
 pygame.init()
 os.environ['SDL_VIDEODRIVER'] = "x11"
-pygame.mixer.init()
+pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=2048)
+pygame.init()
 pygame_clock = pygame.time.Clock()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Chain Reaction')
@@ -45,7 +48,7 @@ def throttle():
 
     :return: None
     """
-    pygame_clock.tick(120)
+    pygame_clock.tick(FRAMERATE)
 
 
 def animate_piece_from_cell_to_cell(cell_from_row: int, cell_from_col: int,
@@ -63,10 +66,16 @@ def animate_piece_from_cell_to_cell(cell_from_row: int, cell_from_col: int,
     end_x = cell_to_col * CELL_SIZE + CELL_SIZE // 2
     end_y = cell_to_row * CELL_SIZE + CELL_SIZE // 2
 
-    num_frames = 20
+    num_frames = 16
+
+    # Calculate the total animation duration based on frames and framerate
+    animation_duration = (num_frames+7) / FRAMERATE
+
     start_frequency = 650
-    end_frequency = 250
-    sound_duration = .5
+    end_frequency = 350
+
+    # Use the animation_duration as the sound duration
+    sound_duration = animation_duration
 
     # Play the smooth frequency sweep while animating
     play_sweep(start_frequency, end_frequency, sound_duration)
@@ -84,7 +93,6 @@ def animate_piece_from_cell_to_cell(cell_from_row: int, cell_from_col: int,
         pygame.display.flip()
         throttle()
 
-    pygame.mixer.stop()
 
 
 def draw_grid():
@@ -173,7 +181,12 @@ def jiggle_cell(row: int, col: int, num_pieces: int, color: tuple[int, int, int]
     :param hollow: A boolean flag indicating if the pieces should be hollow.
     :return: None
     """
-    for _ in range(10):
+    animation_duration = .5  # Duration of the animation in seconds
+    rumble_frequency = 40
+    play_rumble(rumble_frequency, animation_duration, noise_intensity=0)
+
+    start_time = pygame.time.get_ticks()
+    while (pygame.time.get_ticks() - start_time) / 1000 < animation_duration:
         offset_row = random.randint(-2, 2)
         offset_col = random.randint(-2, 2)
         screen.fill(BACKGROUND_COLOR)
@@ -185,13 +198,7 @@ def jiggle_cell(row: int, col: int, num_pieces: int, color: tuple[int, int, int]
                             row_offset_pixels=offset_row, col_offset_pixels=offset_col)
         pygame.display.flip()
         throttle()
-        animation_duration = 1.0  # Duration of the animation in seconds
-        rumble_frequency = 40
-
-        # Start the rumble sound
-        play_rumble(rumble_frequency, animation_duration, noise_intensity=0)
         pygame.time.delay(50)
-    pygame.mixer.stop()  # Ensure no lingering sounds
 
     refresh_screen()
 

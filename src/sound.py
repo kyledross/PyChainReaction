@@ -2,6 +2,26 @@ import functools
 import numpy as np
 import pygame
 
+def apply_fade(audio_array, fade_duration, sample_rate):
+    """
+       Apply fade-in and fade-out effects to an audio array.
+
+       :param audio_array: The numpy array representing the waveform.
+       :param fade_duration: Duration of the fade-in and fade-out in seconds.
+       :param sample_rate: The sampling rate of the waveform in Hz.
+       :return: The audio array with fade-in and fade-out applied.
+       """
+    fade_samples = int(fade_duration * sample_rate)
+    # Create fade-in and fade-out envelopes
+    fade_in = np.linspace(0, 1, fade_samples)
+    fade_out = np.linspace(1, 0, fade_samples)
+
+    # Apply fade-in
+    audio_array[:fade_samples] *= fade_in
+    # Apply fade-out
+    audio_array[-fade_samples:] *= fade_out
+
+    return audio_array
 
 @functools.lru_cache(maxsize=50)
 def generate_sweep_sound(start_frequency, end_frequency, sound_duration):
@@ -14,16 +34,47 @@ def generate_sweep_sound(start_frequency, end_frequency, sound_duration):
     :return: A pygame Sound object of the sweep.
     """
     sample_rate = 44100
+    sound_duration = round(sound_duration * sample_rate) / sample_rate
     t = np.linspace(0, sound_duration, int(sample_rate * sound_duration), endpoint=False)
 
     # Use a smooth interpolation for frequency (logarithmic chirp is smoother than linear)
     frequencies = np.logspace(np.log10(start_frequency), np.log10(end_frequency), num=len(t))
 
     # Create the waveform for the frequency sweep
-    wave = 0.5 * np.sin(2 * np.pi * frequencies * t)
+    waveform = 0.5 * np.sin(2 * np.pi * frequencies * t)
+
+    # Add 2nd and 3rd harmonics
+    waveform += 0.5 * np.sin(2 * np.pi * 2 * frequencies * t)  # 2nd harmonic
+    waveform += 0.25 * np.sin(2 * np.pi * 3 * frequencies * t)  # 3rd harmonic
+    waveform = apply_fade(waveform, fade_duration=0.1, sample_rate=sample_rate)
+
+    # Ensure starts and ends near zero
+    if waveform[0] != 0:
+        waveform[0] = 0
+    if waveform[-1] != 0:
+        waveform[-1] = 0
+
+    # Add short silence padding to the waveform
+    padding_duration = 0.05  # 20 milliseconds of silence
+    padding_samples = int(sample_rate * padding_duration)
+    silence = np.zeros(padding_samples)
+
+    # Concatenate silence to start and end
+    waveform = np.concatenate([silence, waveform, silence])
+
+    # normalize to prevent clipping
+    waveform /= np.max(np.abs(waveform))  # Normalize to range [-1, 1]
+
+
+
+    # apply fade
+    waveform = apply_fade(
+        waveform,
+        fade_duration=0.1,
+        sample_rate=sample_rate)
 
     # Convert the waveform to stereo
-    stereo_wave = np.vstack((wave, wave)).T
+    stereo_wave = np.vstack((waveform, waveform)).T
 
     # Convert the waveform to a format suitable for pygame
     sound = pygame.sndarray.make_sound((32767 * stereo_wave).astype(np.int16).copy())
@@ -41,12 +92,10 @@ def play_sweep(start_frequency, end_frequency, sound_duration, volume=0.1):
     :return: None
     """
     sound = generate_sweep_sound(start_frequency, end_frequency, sound_duration)
-    pygame.mixer.stop()  # Stop any currently playing sounds
     sound.set_volume(volume)
-    sound.play()
-    pygame.mixer.stop()  # Stop any currently playing sounds
-    sound.set_volume(volume)
-    sound.play()
+    channel = pygame.mixer.find_channel()  # Get an available channel
+    if channel:
+        channel.play(sound)
 
 
 @functools.lru_cache(maxsize=50)

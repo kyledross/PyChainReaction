@@ -184,8 +184,7 @@ def jiggle_cell(row: int, col: int, num_pieces: int, color: tuple[int, int, int]
     :return: None
     """
     animation_duration = .5  # Duration of the animation in seconds
-    rumble_frequency = 40
-    play_rumble(rumble_frequency, animation_duration, noise_intensity=0)
+    play_rumble(sound_duration=animation_duration)
 
     start_time = pygame.time.get_ticks()
     while (pygame.time.get_ticks() - start_time) / 1000 < animation_duration:

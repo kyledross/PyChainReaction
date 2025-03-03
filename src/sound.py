@@ -88,7 +88,7 @@ def play_sweep(start_frequency, end_frequency, sound_duration, volume=0.1):
 
 
 @functools.lru_cache(maxsize=50)
-def generate_rumble_sound(frequency, sound_duration, noise_intensity=0.1, noise_frequency=5):
+def generate_rumble_sound(frequency, sound_duration, noise_intensity=0, noise_frequency=4):
     """
     Generate a low-frequency rumble sound with controllable noise frequency.
     :param frequency: The base frequency of the rumble in Hertz (Hz).
@@ -114,7 +114,7 @@ def generate_rumble_sound(frequency, sound_duration, noise_intensity=0.1, noise_
     return sound
 
 
-def play_rumble(frequency, sound_duration, noise_intensity=0.1, volume=0.1):
+def play_rumble(sound_duration, frequency=60, noise_intensity=0, volume=0.1):
     """
     Play a low-frequency rumble sound.
 

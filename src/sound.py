@@ -2,16 +2,18 @@ import functools
 import numpy as np
 import pygame
 
-def apply_fade(audio_array, fade_duration, sample_rate):
+SAMPLE_RATE = 44100
+
+
+def apply_fade(audio_array, fade_duration):
     """
        Apply fade-in and fade-out effects to an audio array.
 
        :param audio_array: The numpy array representing the waveform.
        :param fade_duration: Duration of the fade-in and fade-out in seconds.
-       :param sample_rate: The sampling rate of the waveform in Hz.
        :return: The audio array with fade-in and fade-out applied.
        """
-    fade_samples = int(fade_duration * sample_rate)
+    fade_samples = int(fade_duration * SAMPLE_RATE)
     # Create fade-in and fade-out envelopes
     fade_in = np.linspace(0, 1, fade_samples)
     fade_out = np.linspace(1, 0, fade_samples)
@@ -33,9 +35,8 @@ def generate_sweep_sound(start_frequency, end_frequency, sound_duration):
     :param sound_duration: The duration of the sweep in seconds.
     :return: A pygame Sound object of the sweep.
     """
-    sample_rate = 44100
-    sound_duration = round(sound_duration * sample_rate) / sample_rate
-    t = np.linspace(0, sound_duration, int(sample_rate * sound_duration), endpoint=False)
+    sound_duration = round(sound_duration * SAMPLE_RATE) / SAMPLE_RATE
+    t = np.linspace(0, sound_duration, int(SAMPLE_RATE * sound_duration), endpoint=False)
 
     # Use a smooth interpolation for frequency (logarithmic chirp is smoother than linear)
     frequencies = np.logspace(np.log10(start_frequency), np.log10(end_frequency), num=len(t))
@@ -46,36 +47,24 @@ def generate_sweep_sound(start_frequency, end_frequency, sound_duration):
     # Add 2nd and 3rd harmonics
     waveform += 0.5 * np.sin(2 * np.pi * 2 * frequencies * t)  # 2nd harmonic
     waveform += 0.25 * np.sin(2 * np.pi * 3 * frequencies * t)  # 3rd harmonic
-    waveform = apply_fade(waveform, fade_duration=0.1, sample_rate=sample_rate)
 
+    sound = create_sound_from_waveform(waveform)
+    return sound
+
+
+def create_sound_from_waveform(waveform, fade: bool = True):
+    # add a fade for smoothness
+    if fade:
+        waveform = apply_fade(waveform, fade_duration=0.1)
     # Ensure starts and ends near zero
     if waveform[0] != 0:
         waveform[0] = 0
     if waveform[-1] != 0:
         waveform[-1] = 0
-
-    # Add short silence padding to the waveform
-    padding_duration = 0.05  # 20 milliseconds of silence
-    padding_samples = int(sample_rate * padding_duration)
-    silence = np.zeros(padding_samples)
-
-    # Concatenate silence to start and end
-    waveform = np.concatenate([silence, waveform, silence])
-
     # normalize to prevent clipping
     waveform /= np.max(np.abs(waveform))  # Normalize to range [-1, 1]
-
-
-
-    # apply fade
-    waveform = apply_fade(
-        waveform,
-        fade_duration=0.1,
-        sample_rate=sample_rate)
-
     # Convert the waveform to stereo
     stereo_wave = np.vstack((waveform, waveform)).T
-
     # Convert the waveform to a format suitable for pygame
     sound = pygame.sndarray.make_sound((32767 * stereo_wave).astype(np.int16).copy())
     return sound
@@ -108,8 +97,7 @@ def generate_rumble_sound(frequency, sound_duration, noise_intensity=0.1, noise_
     :param noise_frequency: The frequency of the noise variations in Hertz (Hz).
     :return: A pygame Sound object of the rumble.
     """
-    sample_rate = 44100
-    t = np.linspace(0, sound_duration, int(sample_rate * sound_duration), endpoint=False)
+    t = np.linspace(0, sound_duration, int(SAMPLE_RATE * sound_duration), endpoint=False)
 
     # Base low-frequency wave (a slow sine wave)
     wave = 0.5 * np.sin(2 * np.pi * frequency * t)
@@ -122,11 +110,7 @@ def generate_rumble_sound(frequency, sound_duration, noise_intensity=0.1, noise_
     # Combine the wave and the noise
     rumble = wave + noise
 
-    # Convert to stereo
-    stereo_rumble = np.vstack((rumble, rumble)).T
-
-    # Convert the waveform to a format suitable for pygame
-    sound = pygame.sndarray.make_sound((32767 * stereo_rumble).astype(np.int16).copy())
+    sound = create_sound_from_waveform(rumble, fade=False)
     return sound
 
 
@@ -155,8 +139,7 @@ def generate_plop_sound(start_frequency, end_frequency, sound_duration=0.2, fade
     :param fade_out_duration: The duration over which the sound fades out (less than or equal to sound_duration).
     :return: A pygame Sound object of the plop.
     """
-    sample_rate = 44100
-    t = np.linspace(0, sound_duration, int(sample_rate * sound_duration), endpoint=False)
+    t = np.linspace(0, sound_duration, int(SAMPLE_RATE * sound_duration), endpoint=False)
 
     # Generate a logarithmic sweep for rising pitch effect (sounds smooth to the ear)
     frequencies = np.logspace(np.log10(start_frequency), np.log10(end_frequency), len(t))
@@ -164,13 +147,11 @@ def generate_plop_sound(start_frequency, end_frequency, sound_duration=0.2, fade
 
     # Apply amplitude envelope (fade out)
     fade = np.ones_like(t)
-    fade_out_start = int((sound_duration - fade_out_duration) * sample_rate)
+    fade_out_start = int((sound_duration - fade_out_duration) * SAMPLE_RATE)
     fade[fade_out_start:] *= np.linspace(1.0, 0.0, len(t) - fade_out_start)
     wave *= fade
 
-    # Convert to stereo
-    stereo_wave = np.vstack((wave, wave)).T
-    sound = pygame.sndarray.make_sound((32767 * stereo_wave).astype(np.int16).copy())
+    sound = create_sound_from_waveform(wave)
     return sound
 
 
@@ -205,9 +186,8 @@ def generate_fanfare_sound(start_frequencies, note_duration=0.2, fade_out_durati
     # Harmonies to include for each root note frequency (major third, perfect fifth)
     harmony_intervals = [1.25, 1.5]  # Multipliers for the root frequency
 
-    sample_rate = 44100
     total_duration = len(start_frequencies) * note_duration
-    t = np.linspace(0, total_duration, int(sample_rate * total_duration), endpoint=False)
+    t = np.linspace(0, total_duration, int(SAMPLE_RATE * total_duration), endpoint=False)
 
     # Initialize an empty waveform
     waveform = np.zeros_like(t)
@@ -215,8 +195,8 @@ def generate_fanfare_sound(start_frequencies, note_duration=0.2, fade_out_durati
     # Overlay each note with harmonics into the waveform
     for i, frequency in enumerate(start_frequencies):
         # Time indices for this note
-        start_idx = int(i * note_duration * sample_rate)
-        end_idx = int((i + 1) * note_duration * sample_rate)
+        start_idx = int(i * note_duration * SAMPLE_RATE)
+        end_idx = int((i + 1) * note_duration * SAMPLE_RATE)
         note_t = t[:end_idx - start_idx]  # Time range for this note
 
         # Root frequency for the note
@@ -234,14 +214,13 @@ def generate_fanfare_sound(start_frequencies, note_duration=0.2, fade_out_durati
         waveform[start_idx:end_idx] += note_wave
 
     # Apply fade-out on the final note
-    fade_out_start = int((total_duration - fade_out_duration) * sample_rate)
+    fade_out_start = int((total_duration - fade_out_duration) * SAMPLE_RATE)
     fade = np.ones_like(t)
     fade[fade_out_start:] = np.linspace(1.0, 0.0, len(t) - fade_out_start)
     waveform *= fade
 
-    # Normalize and convert to stereo
-    stereo_waveform = np.vstack((waveform, waveform)).T
-    sound = pygame.sndarray.make_sound((32767 * stereo_waveform).astype(np.int16).copy())
+    sound = create_sound_from_waveform(waveform)
+
     return sound
 
 
@@ -281,16 +260,15 @@ def generate_lost_game_sound(high_frequency, low_frequency, high_note_duration=0
     # Harmonies for a sorrowful effect (minor third and minor seventh intervals)
     harmony_intervals = [1.2, 0.5]  # Harmonic intervals
 
-    sample_rate = 44100
     total_duration = high_note_duration + low_note_duration
-    t = np.linspace(0, total_duration, int(sample_rate * total_duration), endpoint=False)
+    t = np.linspace(0, total_duration, int(SAMPLE_RATE * total_duration), endpoint=False)
 
     # Initialize an empty waveform
     waveform = np.zeros_like(t)
 
     # Add the high note and its harmonies
     high_start_idx = 0
-    high_end_idx = int(high_note_duration * sample_rate)
+    high_end_idx = int(high_note_duration * SAMPLE_RATE)
 
     high_t = t[high_start_idx:high_end_idx]
     high_root_wave = 0.5 * np.sin(2 * np.pi * high_frequency * high_t)
@@ -301,7 +279,7 @@ def generate_lost_game_sound(high_frequency, low_frequency, high_note_duration=0
 
     # Add the low note and its harmonies
     low_start_idx = high_end_idx
-    low_end_idx = low_start_idx + int(low_note_duration * sample_rate)
+    low_end_idx = low_start_idx + int(low_note_duration * SAMPLE_RATE)
 
     # Correctly generate `low_t` based on the waveform's slice indices
     low_t = t[low_start_idx:low_end_idx]
@@ -313,14 +291,12 @@ def generate_lost_game_sound(high_frequency, low_frequency, high_note_duration=0
     waveform[low_start_idx:low_end_idx] += low_root_wave + low_harmonics_wave
 
     # Apply fade-out at the end of the low note
-    fade_out_start = int((total_duration - fade_out_duration) * sample_rate)
+    fade_out_start = int((total_duration - fade_out_duration) * SAMPLE_RATE)
     fade = np.ones_like(t)
     fade[fade_out_start:] = np.linspace(1.0, 0.0, len(t) - fade_out_start)
     waveform *= fade
 
-    # Normalize and convert to stereo
-    stereo_waveform = np.vstack((waveform, waveform)).T
-    sound = pygame.sndarray.make_sound((32767 * stereo_waveform).astype(np.int16).copy())
+    sound = create_sound_from_waveform(waveform)
     return sound
 
 

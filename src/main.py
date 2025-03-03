@@ -228,7 +228,7 @@ def human_turn(current_player_id: int):
                     # todo: add invalid move sound feedback here
                     pass
                 else:
-                    play_plop(sound_duration=.1, fade_out_duration=.07)
+                    play_plop(sound_duration=.1)
                     perform_player_animation(current_player_id)
                     refresh_screen()
                     break

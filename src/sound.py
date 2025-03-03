@@ -129,14 +129,13 @@ def play_rumble(frequency, sound_duration, noise_intensity=0.1, volume=0.1):
     sound.play()
 
 @functools.lru_cache(maxsize=50)
-def generate_plop_sound(start_frequency, end_frequency, sound_duration=0.2, fade_out_duration=0.15):
+def generate_plop_sound(start_frequency, end_frequency, sound_duration=0.2):
     """
     Generate a 'plop' sound effect that starts at a low frequency and sweeps to a higher frequency.
 
     :param start_frequency: The starting frequency in Hertz (Hz).
     :param end_frequency: The ending frequency in Hertz (Hz).
     :param sound_duration: The total duration of the plop sound, in seconds.
-    :param fade_out_duration: The duration over which the sound fades out (less than or equal to sound_duration).
     :return: A pygame Sound object of the plop.
     """
     t = np.linspace(0, sound_duration, int(SAMPLE_RATE * sound_duration), endpoint=False)
@@ -149,29 +148,27 @@ def generate_plop_sound(start_frequency, end_frequency, sound_duration=0.2, fade
     return sound
 
 
-def play_plop(start_frequency=150.0, end_frequency=400.0, sound_duration=0.15, fade_out_duration=0.10, volume=0.2):
+def play_plop(start_frequency=150.0, end_frequency=400.0, sound_duration=0.15, volume=0.2):
     """
     Play a short 'plop' sound effect.
 
     :param start_frequency: The starting frequency in Hertz (Hz).
     :param end_frequency: The ending frequency in Hertz (Hz).
     :param sound_duration: The duration of the plop sound, in seconds.
-    :param fade_out_duration: The duration over which the sound fades out.
     :param volume: The volume level of the plop sound (0.0 to 1.0).
     :return: None
     """
-    sound = generate_plop_sound(start_frequency, end_frequency, sound_duration, fade_out_duration)
+    sound = generate_plop_sound(start_frequency, end_frequency, sound_duration)
     sound.set_volume(volume)
     sound.play()
 
 @functools.lru_cache(maxsize=50)
-def generate_fanfare_sound(start_frequencies, note_duration=0.2, fade_out_duration=0.1):
+def generate_fanfare_sound(start_frequencies, note_duration=0.2):
     """
     Generate a celebratory "ta-da!" fanfare sound using a sequence of rising notes with harmonies.
 
     :param start_frequencies: A list or tuple of frequencies (in Hz) for each note in the fanfare.
     :param note_duration: The duration of each note in the fanfare, in seconds.
-    :param fade_out_duration: The fade-out at the end of the final note, in seconds.
     :return: A pygame Sound object of the fanfare.
     """
     if isinstance(start_frequencies, list):
@@ -212,13 +209,12 @@ def generate_fanfare_sound(start_frequencies, note_duration=0.2, fade_out_durati
     return sound
 
 
-def play_fanfare(start_frequencies=None, note_duration=0.2, fade_out_duration=0.1, volume=0.3):
+def play_fanfare(start_frequencies=None, note_duration=0.2, volume=0.3):
     """
     Play a celebratory "ta-da!" fanfare sound.
 
     :param start_frequencies: A list of frequencies (in Hz) for each note in the fanfare.
     :param note_duration: The duration of each note, in seconds.
-    :param fade_out_duration: The fade-out duration at the end of the fanfare.
     :param volume: The volume level for the fanfare.
     :return: None
     """
@@ -228,13 +224,12 @@ def play_fanfare(start_frequencies=None, note_duration=0.2, fade_out_duration=0.
     if isinstance(start_frequencies, list):
         start_frequencies = tuple(start_frequencies)
 
-    sound = generate_fanfare_sound(start_frequencies, note_duration, fade_out_duration)
+    sound = generate_fanfare_sound(start_frequencies, note_duration)
     sound.set_volume(volume)
     sound.play()
 
 @functools.lru_cache(maxsize=50)
-def generate_lost_game_sound(high_frequency, low_frequency, high_note_duration=0.2, low_note_duration=0.5,
-                             fade_out_duration=0.3):
+def generate_lost_game_sound(high_frequency, low_frequency, high_note_duration=0.2, low_note_duration=0.5):
     """
     Generate a sorrowful two-note harmonic sound that signifies loss.
 
@@ -242,7 +237,6 @@ def generate_lost_game_sound(high_frequency, low_frequency, high_note_duration=0
     :param low_frequency: The frequency (in Hz) of the second low note.
     :param high_note_duration: The duration of the first high note, in seconds.
     :param low_note_duration: The duration of the second low note, in seconds.
-    :param fade_out_duration: The fade-out duration at the end of the low note, in seconds.
     :return: A pygame Sound object of the sorrowful sound.
     """
     # Harmonies for a sorrowful effect (minor third and minor seventh intervals)
@@ -258,6 +252,7 @@ def generate_lost_game_sound(high_frequency, low_frequency, high_note_duration=0
     high_start_idx = 0
     high_end_idx = int(high_note_duration * SAMPLE_RATE)
 
+    # noinspection DuplicatedCode
     high_t = t[high_start_idx:high_end_idx]
     high_root_wave = 0.5 * np.sin(2 * np.pi * high_frequency * high_t)
     high_harmonics_wave = sum(
@@ -270,6 +265,7 @@ def generate_lost_game_sound(high_frequency, low_frequency, high_note_duration=0
     low_end_idx = low_start_idx + int(low_note_duration * SAMPLE_RATE)
 
     # Correctly generate `low_t` based on the waveform's slice indices
+    # noinspection DuplicatedCode
     low_t = t[low_start_idx:low_end_idx]
 
     low_root_wave = 0.5 * np.sin(2 * np.pi * low_frequency * low_t)
@@ -283,7 +279,7 @@ def generate_lost_game_sound(high_frequency, low_frequency, high_note_duration=0
 
 
 def play_lost_game_sound(high_frequency=600.0, low_frequency=200.0, high_note_duration=0.2, low_note_duration=0.5,
-                         fade_out_duration=0.3, volume=0.3):
+                         volume=0.3):
     """
     Play a sorrowful two-note harmonic sound that signifies loss.
 
@@ -291,11 +287,9 @@ def play_lost_game_sound(high_frequency=600.0, low_frequency=200.0, high_note_du
     :param low_frequency: The frequency (in Hz) of the second low note.
     :param high_note_duration: The duration of the first high note, in seconds.
     :param low_note_duration: The duration of the second low note, in seconds.
-    :param fade_out_duration: The fade-out duration at the end of the second note.
     :param volume: The volume level for the sound (0.0 to 1.0).
     :return: None
     """
-    sound = generate_lost_game_sound(high_frequency, low_frequency, high_note_duration, low_note_duration,
-                                     fade_out_duration)
+    sound = generate_lost_game_sound(high_frequency, low_frequency, high_note_duration, low_note_duration)
     sound.set_volume(volume)
     sound.play()

@@ -10,6 +10,8 @@ from game_logic import logic
 from game_logic.logic import determine_winner
 from sound import play_sweep, play_rumble, play_plop, play_fanfare, play_lost_game_sound
 
+COMPUTER_DECISION_DELAY = 300
+
 BACKGROUND_COLOR = (180, 180, 180)  # Light grey color
 ROWS = 5
 COLS = 6
@@ -300,10 +302,10 @@ def computer_turn(current_player_id: int, opponent_player_id: int):
                                                                             current_player_id,
                                                                             opponent_player_id)
     best_computer_turn = computer_logic.basic_strategy.choose_one_best_move(possible_computer_turns)
-    wait_for_a_bit(500)
+    wait_for_a_bit(COMPUTER_DECISION_DELAY)
     hovered_cell = best_computer_turn["x"], best_computer_turn["y"]
     refresh_screen()  # redraw with the "hovered" cell where the computer will "click"
-    wait_for_a_bit(500)  # give the human a chance to see where the computer is going to "click"
+    wait_for_a_bit(COMPUTER_DECISION_DELAY)  # give the human a chance to see where the computer is going to "click"
     game_logic.place_piece(best_computer_turn["x"], best_computer_turn["y"], current_player_id)
     play_plop(start_frequency=450, end_frequency=100)
     perform_player_animation(current_player_id)

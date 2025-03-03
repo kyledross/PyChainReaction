@@ -77,7 +77,7 @@ class Logic:
     def piece_placement_is_allowed(self, row: int, col: int, player_id: int) -> bool:
         """
         Checks to see if the specified player can place a piece at the specified location.
-        This is driven by whether or not another player's piece is already at the location.
+        This is driven by whether another player's piece is already at the location.
         :param row: The row index on the board where the player wants to place the piece.
         :param col: The column index on the board where the player wants to place the piece.
         :param player_id: The identifier for the player attempting to place the piece.
@@ -263,6 +263,7 @@ class Logic:
         if self.board[row_index][col_index]['num_pieces'] < 4:
             return False
         # change ownership
+        # noinspection DuplicatedCode
         self.get_position_above(row_index, col_index)['player_id'] = self.board[row_index][col_index]['player_id']
         self.get_position_below(row_index, col_index)['player_id'] = self.board[row_index][col_index]['player_id']
         self.get_position_to_the_left(row_index, col_index)['player_id'] = self.board[row_index][col_index]['player_id']
@@ -341,6 +342,7 @@ class Logic:
         :param row_index: The row index of the position on the board to be processed.
         :return: A boolean value indicating whether the processing resulted in a chain reaction.
         """
+        # noinspection DuplicatedCode
         self.validate_board_boundaries(row_index, col_index)
         if self.board[row_index][col_index]['num_pieces'] < 3:
             return False
@@ -361,6 +363,7 @@ class Logic:
         :param row_index: The row index of the cell being processed.
         :return: A boolean value indicating whether the processing resulted in a chain reaction.
         """
+        # noinspection DuplicatedCode
         self.validate_board_boundaries(row_index, col_index)
         if self.board[row_index][col_index]['num_pieces'] < 3:
             return False
@@ -407,6 +410,7 @@ class Logic:
         if self.board[row_index][col_index]['num_pieces'] < 3:
             return False
         # change ownership
+        # noinspection DuplicatedCode
         self.get_position_below(row_index, col_index)['player_id'] = self.board[row_index][col_index]['player_id']
         self.get_position_to_the_left(row_index, col_index)['player_id'] = self.board[row_index][col_index]['player_id']
         self.get_position_to_the_right(row_index, col_index)['player_id'] = self.board[row_index][col_index][

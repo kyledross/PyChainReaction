@@ -29,7 +29,7 @@ COMPUTER_PLAYER_ID = 2
 
 # Initialize PyGame
 pygame.init()
-os.environ['SDL_VIDEODRIVER'] = "x11"
+os.environ['SDL_VIDEODRIVER'] = "x11" # this is needed to run in a Docker container
 pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=2048)
 pygame.init()
 pygame_clock = pygame.time.Clock()

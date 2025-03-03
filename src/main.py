@@ -8,7 +8,7 @@ import pygame
 import computer_logic.basic_strategy
 from game_logic import logic
 from game_logic.logic import determine_winner
-from sound import play_sweep, play_rumble, play_plop, play_fanfare, play_lost_game_sound
+from sound import play_sweep, play_rumble, play_plop, play_fanfare, play_lost_game_sound, play_bonk
 
 COMPUTER_DECISION_DELAY = 300
 
@@ -227,7 +227,7 @@ def human_turn(current_player_id: int):
             if hovered_cell != (-1, -1):
                 row, col = hovered_cell
                 if not game_logic.place_piece(row, col, current_player_id):
-                    # todo: add invalid move sound feedback here
+                    play_bonk()
                     pass
                 else:
                     play_plop(sound_duration=.1)

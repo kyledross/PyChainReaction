@@ -228,6 +228,39 @@ def play_fanfare(start_frequencies=None, note_duration=0.2, volume=0.3):
     sound.set_volume(volume)
     sound.play()
 
+
+@functools.lru_cache(maxsize=50)
+def generate_bonk_sound():
+    """
+    Generate a 'bonk' sound effect for indicating a wrong move, with added distortion.
+    :return: A pygame Sound object of the bonk.
+    """
+    base_frequency=70.0
+    sound_duration=0.2
+    decay=0.02
+    volume = 0.6
+    t = np.linspace(0, sound_duration, int(SAMPLE_RATE * sound_duration), endpoint=False)
+
+    # Generate a decaying sine wave for the bonk sound
+    wave = 0.5 * np.sin(2 * np.pi * base_frequency * t) * np.exp(-decay * t)
+
+    # Add distortion to the waveform (simulate "not okay" sound)
+    wave = np.tanh(5 * wave)
+
+    sound = create_sound_from_waveform(wave)
+    sound.set_volume(volume)
+    return sound
+
+
+def play_bonk():
+    """
+    Play a short 'bonk' sound effect.
+
+    :return: None
+    """
+    sound = generate_bonk_sound()
+    sound.play()
+
 @functools.lru_cache(maxsize=50)
 def generate_lost_game_sound(high_frequency, low_frequency, high_note_duration=0.2, low_note_duration=0.5):
     """

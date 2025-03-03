@@ -52,7 +52,7 @@ def find_best_moves(board: list[list[dict[str, int]]], current_player_id: int, o
 
 def choose_one_best_move(best_moves: list[dict[str, int]]) -> dict[str, int]:
     """
-    Returns a single best move x, y from a list of 1 or more best moves.
+    Returns a single best move x, y from a list of 1 or more "best" moves.
     If there are more than one best move, one will be chosen at random.
     :param best_moves: A list of dictionaries containing possible best moves with their coordinates.
     :return: A dictionary containing the x and y coordinates of the chosen best move.

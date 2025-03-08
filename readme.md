@@ -41,4 +41,6 @@ This effort is only an attempt to recreate the gameplay in Python so that it can
 These are the online sources where I found the original program. They are viable links as of August 2024.
 
 https://www.atarimagazines.com/compute/issue80/chain_reaction.php  
-https://archive.org/details/1987-01-compute-magazine/page/44/mode/2up?view=theater.  
+https://archive.org/details/1987-01-compute-magazine/page/44/mode/2up?view=theater. 
+
+test

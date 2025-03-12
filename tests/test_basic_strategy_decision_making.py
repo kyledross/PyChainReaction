@@ -38,8 +38,8 @@ class TestBasicStrategyDecisionMaking(unittest.TestCase):
         self.assertIn((best_move["x"], best_move["y"]), [(2, 2)])
 
     def test_other_players_cells_should_not_be_suggested_moves(self):
-        # this came from a test run of pc vs pc
-        # player 2 was taking their turn, and x1, y2 was attempted, which already belongs to player 1
+        # this came from a test run of pc vs. pc
+        # player 2 was taking their turn, and [x1, y2] was attempted, which already belongs to player 1
         # that should not be in the list of possible moves
         # test that if the best moves are for player 2, that no moves are being suggested that
         board = [
@@ -52,6 +52,19 @@ class TestBasicStrategyDecisionMaking(unittest.TestCase):
             x, y = move['x'], move['y']
             self.assertNotEqual(board[y][x]['player_id'], 2)
 
+    def test_other_players_cells_should_not_be_suggested_moves_one_spot(self):
+        # this came from a real bug.
+        # the list of possible best-moves should never include spots that aren't valid, such as the spot taken
+        # by an opponent.
+        board = [
+            [{'player_id': 1, 'num_pieces': 1}, {'player_id': 0, 'num_pieces': 0}, {'player_id': 0, 'num_pieces': 0}],
+            [{'player_id': 0, 'num_pieces': 0}, {'player_id': 0, 'num_pieces': 0}, {'player_id': 0, 'num_pieces': 0}],
+            [{'player_id': 0, 'num_pieces': 0}, {'player_id': 0, 'num_pieces': 0}, {'player_id': 0, 'num_pieces': 0}]
+        ]
+        best_moves = basic_strategy.find_best_moves(board, 2, 1)
+        for move in best_moves:
+            x, y = move['x'], move['y']
+            self.assertNotEqual(board[y][x]['player_id'], 1)
 
 if __name__ == '__main__':
     unittest.main()

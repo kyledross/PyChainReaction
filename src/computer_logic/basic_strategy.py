@@ -36,7 +36,10 @@ def find_best_moves(board: list[list[dict[str, int]]], current_player_id: int, o
                     # 1 point penalty in scoring
                     current_player_score_after_placing -= 1
                 current_player_score_after_placing += opponent_before_score - opponent_after_score
+
                 scored_moves.append({"x": x, "y": y, "score": current_player_score_after_placing})
+            else:
+                scored_moves.append({"x": x, "y": y, "score": 0})  # this move isn't allowed
 
     # Find the highest score
     highest_score = max(move["score"] for move in scored_moves)

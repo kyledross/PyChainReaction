@@ -7,10 +7,11 @@ from game_logic.logic import Logic
 
 def find_best_moves(board: list[list[dict[str, int]]], current_player_id: int, opponent_player_id: int) -> list[dict[str, int]]:
     """
-    This routine will iteratively attempt to place a piece on each cell of a board, and then
-    process the board for each move to see how effective the move was.  It scores each attempted move,
+    This routine will iteratively attempt to place a piece on each cell of a board and then
+    process the board for each move to see how effective the move was.
+    It scores each attempted move
     and then returns a list of the best moves.
-    :param board: the game board
+    :param board: The game board
     :param current_player_id: the id of the player making the move
     :param opponent_player_id: the id of the opponent player
     :return: List of x,y, and score of the best moves
@@ -33,13 +34,10 @@ def find_best_moves(board: list[list[dict[str, int]]], current_player_id: int, o
                 opponent_after_score: int = score_game_board(logic_instance.board, opponent_player_id)
                 if current_player_score_after_placing - current_player_score_before_placing == 1:
                     # this move did nothing more than add a piece
-                    # 1 point penalty in scoring
+                    # 1-point penalty in scoring
                     current_player_score_after_placing -= 1
                 current_player_score_after_placing += opponent_before_score - opponent_after_score
-
                 scored_moves.append({"x": x, "y": y, "score": current_player_score_after_placing})
-            else:
-                scored_moves.append({"x": x, "y": y, "score": 0})  # this move isn't allowed
 
     # Find the highest score
     highest_score = max(move["score"] for move in scored_moves)
@@ -52,8 +50,8 @@ def find_best_moves(board: list[list[dict[str, int]]], current_player_id: int, o
 
 def choose_one_best_move(best_moves: list[dict[str, int]]) -> dict[str, int]:
     """
-    Returns a single best move x, y from a list of 1 or more "best" moves.
-    If there are more than one best move, one will be chosen at random.
+    Returns the single best move x, y from a list of 1 or more "best" moves.
+    If there is more than one best move, one will be chosen at random.
     :param best_moves: A list of dictionaries containing possible best moves with their coordinates.
     :return: A dictionary containing the x and y coordinates of the chosen best move.
     """

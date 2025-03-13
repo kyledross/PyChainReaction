@@ -39,6 +39,9 @@ def find_best_moves(board: list[list[dict[str, int]]], current_player_id: int, o
                 current_player_score_after_placing += opponent_before_score - opponent_after_score
                 scored_moves.append({"x": x, "y": y, "score": current_player_score_after_placing})
 
+    if not scored_moves:
+        raise ValueError("There were no moves possible. This should never happen.")
+
     # Find the highest score
     highest_score = max(move["score"] for move in scored_moves)
 

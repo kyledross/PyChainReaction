@@ -66,5 +66,17 @@ class TestBasicStrategyDecisionMaking(unittest.TestCase):
             x, y = move['x'], move['y']
             self.assertNotEqual(board[y][x]['player_id'], 1)
 
+    def test_no_possible_moves(self):
+        # this came from a real bug.
+        # the list of possible best-moves should never include spots that aren't valid, such as the spot taken
+        # by an opponent.
+        board = [
+            [{'player_id': 1, 'num_pieces': 1}, {'player_id': 1, 'num_pieces': 1}, {'player_id': 1, 'num_pieces': 1}],
+            [{'player_id': 1, 'num_pieces': 1}, {'player_id': 1, 'num_pieces': 1}, {'player_id': 1, 'num_pieces': 1}],
+            [{'player_id': 1, 'num_pieces': 1}, {'player_id': 1, 'num_pieces': 1}, {'player_id': 1, 'num_pieces': 1}]
+        ]
+        with self.assertRaises(ValueError):
+            basic_strategy.find_best_moves(board, 2, 1)
+
 if __name__ == '__main__':
     unittest.main()

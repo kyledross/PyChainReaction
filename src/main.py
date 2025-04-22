@@ -307,7 +307,10 @@ def computer_turn(current_player_id: int, opponent_player_id: int):
     possible_computer_turns = computer_logic.basic_strategy.find_best_moves(game_logic.board,
                                                                             current_player_id,
                                                                             opponent_player_id)
-    best_computer_turn = computer_logic.basic_strategy.choose_one_best_move(possible_computer_turns)
+    best_computer_turn = computer_logic.basic_strategy.choose_one_best_move(possible_computer_turns, 
+                                                                           game_logic.board,
+                                                                           current_player_id,
+                                                                           opponent_player_id)
     wait_for_a_bit(COMPUTER_DECISION_DELAY)
     hovered_cell = best_computer_turn["x"], best_computer_turn["y"]
     refresh_screen()  # redraw with the "hovered" cell where the computer will "click"

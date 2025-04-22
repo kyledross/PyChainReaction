@@ -11,7 +11,7 @@ class TestBasicStrategyDecisionMaking(unittest.TestCase):
             [{'player_id': 0, 'num_pieces': 0}, {'player_id': 0, 'num_pieces': 0}, {'player_id': 0, 'num_pieces': 0}]
         ]
         result = basic_strategy.find_best_moves(board, 2, 1)
-        best_move = basic_strategy.choose_one_best_move(result)
+        best_move = basic_strategy.choose_one_best_move(result, board, 2, 1)
         self.assertEqual(best_move["x"], 0)
         self.assertEqual(best_move["y"], 1)
 
@@ -22,7 +22,7 @@ class TestBasicStrategyDecisionMaking(unittest.TestCase):
             [{'player_id': 0, 'num_pieces': 0}, {'player_id': 0, 'num_pieces': 0}, {'player_id': 1, 'num_pieces': 1}]
         ]
         result = basic_strategy.find_best_moves(board, 2, 1)
-        best_move = basic_strategy.choose_one_best_move(result)
+        best_move = basic_strategy.choose_one_best_move(result, board, 2, 1)
         self.assertEqual(best_move["x"], 0)
         self.assertEqual(best_move["y"], 1)
 
@@ -34,7 +34,7 @@ class TestBasicStrategyDecisionMaking(unittest.TestCase):
         ]
         result = basic_strategy.find_best_moves(board, 2, 1)
         self.assertIn({'x': 2, 'y': 2, 'score': 6}, result)
-        best_move = basic_strategy.choose_one_best_move(result)
+        best_move = basic_strategy.choose_one_best_move(result, board, 2, 1)
         self.assertIn((best_move["x"], best_move["y"]), [(2, 2)])
 
     def test_other_players_cells_should_not_be_suggested_moves(self):

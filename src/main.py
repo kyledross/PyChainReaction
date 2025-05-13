@@ -358,8 +358,9 @@ def display_winner(winner: int):
     hovered_cell = (-1, -1)
     refresh_screen()
     # Create dialog box background
-    dialog_width = 300
+    golden_ratio = (1 + 5 ** 0.5) / 2
     dialog_height = 175
+    dialog_width = 175 * golden_ratio
     dialog_rect = pygame.Rect((WIDTH - dialog_width) // 2, (HEIGHT - dialog_height) // 2,
                               dialog_width, dialog_height)
     pygame.draw.rect(screen, (255, 255, 255), dialog_rect)

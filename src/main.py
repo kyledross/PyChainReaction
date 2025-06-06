@@ -307,7 +307,10 @@ def computer_turn(current_player_id: int, opponent_player_id: int):
     possible_computer_turns = computer_logic.basic_strategy.find_best_moves(game_logic.board,
                                                                             current_player_id,
                                                                             opponent_player_id)
-    best_computer_turn = computer_logic.basic_strategy.choose_one_best_move(possible_computer_turns)
+    best_computer_turn = computer_logic.basic_strategy.choose_one_best_move(possible_computer_turns, 
+                                                                           game_logic.board,
+                                                                           current_player_id,
+                                                                           opponent_player_id)
     wait_for_a_bit(COMPUTER_DECISION_DELAY)
     hovered_cell = best_computer_turn["x"], best_computer_turn["y"]
     refresh_screen()  # redraw with the "hovered" cell where the computer will "click"
@@ -354,16 +357,26 @@ def display_winner(winner: int):
     global hovered_cell, current_player, board, game_logic
     hovered_cell = (-1, -1)
     refresh_screen()
-    text = font.render(f'{"You win!" if winner == 1 else "Computer wins!"} Play again?', True, (0, 0, 0))
-    text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
-    text_rect.inflate_ip(6, 6)
-    text_rect.move_ip(-3, -3)
-    screen.fill((255, 255, 255), text_rect)  # Fill the text area with white
-    pygame.draw.rect(screen, (0, 0, 0), text_rect, 2)
-    text_rect.move_ip(3, 3)
+    # Create dialog box background
+    golden_ratio = (1 + 5 ** 0.5) / 2
+    dialog_height = 175
+    dialog_width = 175 * golden_ratio
+    dialog_rect = pygame.Rect((WIDTH - dialog_width) // 2, (HEIGHT - dialog_height) // 2,
+                              dialog_width, dialog_height)
+    pygame.draw.rect(screen, (255, 255, 255), dialog_rect)
+    pygame.draw.rect(screen, (0, 0, 0), dialog_rect, 2)
+
+    # Draw victory text
+    text = font.render(f'{"You win!" if winner == 1 else "Computer wins!"}', True, (0, 0, 0))
+    text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))
     screen.blit(text, text_rect)
 
-    # Create Yes/No button
+    # Draw "Play again?" text
+    play_text = font.render("Play again?", True, (0, 0, 0))
+    play_rect = play_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 15))
+    screen.blit(play_text, play_rect)
+
+    # Create Yes/No buttons with backgrounds
     yes_text = font.render('Yes', True, (0, 0, 0))
     no_text = font.render('No', True, (0, 0, 0))
     yes_rect = yes_text.get_rect(center=(WIDTH // 2 - 50, HEIGHT // 2 + 50))
